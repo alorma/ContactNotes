@@ -13,17 +13,33 @@
         android:scaleType="centerCrop"
         tools:src="#ffff00"/>
 
-    <TextView
-        android:id="@+id/contactName"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="#AA000000"
-        android:gravity="center_vertical"
         android:paddingEnd="8dp"
-        android:paddingStart="8dp"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
-        android:textColor="#FFFFFFFF"
-        tools:text="Patata"/>
+        android:paddingStart="8dp">
+
+        <TextView
+            android:id="@+id/contactName"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:gravity="center_vertical"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
+            android:textColor="#FFFFFFFF"
+            tools:text="Patata"/>
+
+        <TextView
+            android:id="@+id/contactNotes"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="end|center_vertical"
+            android:gravity="center"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
+            android:textColor="#FFFFFFFF"
+            tools:text="6"
+            />
+    </FrameLayout>
 
 </FrameLayout>

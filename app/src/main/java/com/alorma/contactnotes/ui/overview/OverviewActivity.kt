@@ -5,11 +5,15 @@ import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.View
+import android.view.View.*
 import android.widget.TextView
 import com.alorma.contactnotes.R
 import com.alorma.contactnotes.domain.contacts.Contact
 import com.alorma.contactnotes.ui.contacts.ContactsActivity
+import com.alorma.contactnotes.ui.contacts.ContactsAdapter
 
 class OverviewActivity : AppCompatActivity() {
 
@@ -19,6 +23,7 @@ class OverviewActivity : AppCompatActivity() {
 
     private lateinit var viewModel: OverviewViewModel
 
+    private val recyclerOverview: RecyclerView by lazy { findViewById<RecyclerView>(R.id.recyclerOverview) }
     private val textView: TextView by lazy { findViewById<TextView>(R.id.contactsText) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,11 +31,22 @@ class OverviewActivity : AppCompatActivity() {
         setContentView(R.layout.activity_overview)
 
         setupFAB()
+        setupAdapter()
 
         viewModel = OverviewInjector.provideOverviewViewModel(this)
 
         subscribe()
         viewModel.loadContacts()
+    }
+
+    private lateinit var contactsAdapter: ContactsAdapter
+
+    private fun setupAdapter() {
+        recyclerOverview.layoutManager = GridLayoutManager(this, 2)
+        contactsAdapter = ContactsAdapter({
+
+        })
+        recyclerOverview.adapter = contactsAdapter
     }
 
     private fun setupFAB() {
@@ -47,7 +63,7 @@ class OverviewActivity : AppCompatActivity() {
     private fun subscribe() {
         viewModel.contacts.observe(this, Observer<List<Contact>> {
             it?.let {
-                if (it.isNotEmpty()) onContactLoaded(it.size) else onContactsEmpty()
+                if (it.isNotEmpty()) onContactLoaded(it) else onContactsEmpty()
             }
         })
         viewModel.error.observe(this, Observer<Throwable> {
@@ -58,11 +74,17 @@ class OverviewActivity : AppCompatActivity() {
         })
     }
 
-    private fun onContactLoaded(size: Int) {
-        textView.text = "Contacts saved: $size"
+    private fun onContactLoaded(list: List<Contact>) {
+        recyclerOverview.visibility = VISIBLE
+        textView.visibility = GONE
+        contactsAdapter.clear()
+        contactsAdapter.addItems(list)
     }
 
     private fun onContactsEmpty() {
+        recyclerOverview.visibility = INVISIBLE
+        textView.visibility = VISIBLE
+
         textView.text = "Contacts saved: empty"
     }
 
