@@ -27,7 +27,6 @@ class ContactsAdapter(private val callback: (Contact) -> Unit) : RecyclerView.Ad
 
         private val contactImage: ImageView = itemView.findViewById(R.id.contactPhoto)
         private val contactName: TextView = itemView.findViewById(R.id.contactName)
-        private val contactNotes: TextView = itemView.findViewById(R.id.contactNote)
 
         fun populate(contact: Contact) {
             contactName.text = contact.name
@@ -38,13 +37,7 @@ class ContactsAdapter(private val callback: (Contact) -> Unit) : RecyclerView.Ad
             contactImage.setImageDrawable(drawable)
 
             contact.photo?.let { contactImage.setImageURI(it) }
-
-            contact.notes?.let {
-                if (it.isNotEmpty()) {
-                    contactNotes.text = it.size.toString()
-                }
-            }
-
+            
             itemView.setOnClickListener {
                 callback.invoke(contact)
             }
