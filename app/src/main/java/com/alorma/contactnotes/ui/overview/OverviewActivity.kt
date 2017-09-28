@@ -22,6 +22,7 @@ class OverviewActivity : AppCompatActivity() {
     }
 
     private lateinit var viewModel: OverviewViewModel
+    private lateinit var contactsAdapter: ContactsOverviewAdapter
 
     private val recyclerOverview: RecyclerView by lazy { findViewById<RecyclerView>(R.id.recyclerOverview) }
     private val textView: TextView by lazy { findViewById<TextView>(R.id.contactsText) }
@@ -43,11 +44,9 @@ class OverviewActivity : AppCompatActivity() {
 
     }
 
-    private lateinit var contactsAdapter: ContactsAdapter
-
     private fun setupAdapter() {
         recyclerOverview.layoutManager = GridLayoutManager(this, 2)
-        contactsAdapter = ContactsAdapter({
+        contactsAdapter = ContactsOverviewAdapter({
 
         })
         recyclerOverview.adapter = contactsAdapter

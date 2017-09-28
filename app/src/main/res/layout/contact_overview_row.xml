@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:foreground="?selectableItemBackground"
+             android:orientation="horizontal">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="4dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/contactNote"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_gravity="end|center_vertical"
+                android:padding="8dp"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
+                app:autoSizeMaxTextSize="100sp"
+                app:autoSizeMinTextSize="12sp"
+                app:autoSizeStepGranularity="2sp"
+                app:autoSizeTextType="uniform"
+                tools:text="6dvbkeb fje r gje r goerhgoerh gjehgoue guehguehgiuh  3giuh  ouhe4oughe4ouhe4"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:background="#AA000000"
+                android:paddingEnd="8dp"
+                android:paddingStart="8dp">
+
+                <com.github.siyamed.shapeimageview.CircularImageView
+                    android:id="@+id/contactPhoto"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:padding="8dp"
+                    android:scaleType="centerCrop"
+                    tools:src="#ffff00"/>
+
+                <TextView
+                    android:id="@+id/contactName"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:gravity="center_vertical"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
+                    android:textColor="#FFFFFFFF"
+                    tools:text="Patata"/>
+
+            </LinearLayout>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+</FrameLayout>

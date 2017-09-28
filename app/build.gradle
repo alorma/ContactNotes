@@ -25,6 +25,7 @@ android {
 dependencies {
     // Support libraries
     implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
+    implementation "com.android.support:cardview-v7:$rootProject.supportLibraryVersion"
     implementation "com.android.support:support-v4:$rootProject.supportLibraryVersion"
     implementation "com.android.support:design:$rootProject.supportLibraryVersion"
     // Architecture components

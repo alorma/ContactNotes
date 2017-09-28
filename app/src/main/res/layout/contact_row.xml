@@ -30,16 +30,6 @@
             android:textColor="#FFFFFFFF"
             tools:text="Patata"/>
 
-        <TextView
-            android:id="@+id/contactNotes"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="end|center_vertical"
-            android:gravity="center"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
-            android:textColor="#FFFFFFFF"
-            tools:text="6"
-            />
     </FrameLayout>
 
 </FrameLayout>
