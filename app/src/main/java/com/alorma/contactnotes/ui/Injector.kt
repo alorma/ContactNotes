@@ -13,6 +13,7 @@ import com.alorma.contactnotes.data.contacts.persistance.ContactsDAO
 import com.alorma.contactnotes.data.notes.NotesDataSource
 import com.alorma.contactnotes.data.notes.RoomNotesDataSource
 import com.alorma.contactnotes.data.notes.persistance.NotesDAO
+import com.alorma.contactnotes.domain.GetNoteFromContactUseCase
 import com.alorma.contactnotes.domain.contacts.ContactsRepository
 import com.alorma.contactnotes.domain.InsertContactUseCase
 import com.alorma.contactnotes.domain.ListContactsWithNotesUseCase
@@ -29,7 +30,8 @@ open class Injector {
     private fun provideAppViewModelFactory(context: Context): ViewModelProvider.Factory {
         return AppViewModelFactory(provideListExternalContactsUseCase(context),
                 provideListContactsWithNotesUseCase(context),
-                provideInsertContactUseCase(context))
+                provideInsertContactUseCase(context),
+                provideGetNoteFromContact(context))
     }
 
     private fun provideContactsRepository(context: Context): ContactsRepository {
@@ -70,6 +72,10 @@ open class Injector {
 
     private fun provideNotesDatabase(context: Context): NotesDAO {
         return AppDatabase.getInstance(context).notesDao()
+    }
+
+    private fun provideGetNoteFromContact(context: Context): GetNoteFromContactUseCase {
+        return GetNoteFromContactUseCase(provideNotesRepository(context))
     }
 
 }

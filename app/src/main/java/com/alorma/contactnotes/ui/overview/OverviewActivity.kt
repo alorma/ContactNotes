@@ -1,7 +1,6 @@
 package com.alorma.contactnotes.ui.overview
 
 import android.app.Activity
-import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -13,7 +12,7 @@ import android.widget.TextView
 import com.alorma.contactnotes.R
 import com.alorma.contactnotes.domain.contacts.Contact
 import com.alorma.contactnotes.ui.contacts.ContactsActivity
-import com.alorma.contactnotes.ui.contacts.ContactsAdapter
+import com.alorma.contactnotes.ui.notes.NoteActivity
 
 class OverviewActivity : AppCompatActivity() {
 
@@ -41,13 +40,12 @@ class OverviewActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             viewModel.loadContacts()
         }
-
     }
 
     private fun setupAdapter() {
         recyclerOverview.layoutManager = GridLayoutManager(this, 2)
         contactsAdapter = ContactsOverviewAdapter({
-
+            startActivity(NoteActivity.newInstace(this@OverviewActivity, it.rawId))
         })
         recyclerOverview.adapter = contactsAdapter
     }
