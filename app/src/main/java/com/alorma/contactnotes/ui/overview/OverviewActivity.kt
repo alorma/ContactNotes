@@ -36,7 +36,11 @@ class OverviewActivity : AppCompatActivity() {
         viewModel = OverviewInjector.provideOverviewViewModel(this)
 
         subscribe()
-        viewModel.loadContacts()
+
+        if (savedInstanceState == null) {
+            viewModel.loadContacts()
+        }
+
     }
 
     private lateinit var contactsAdapter: ContactsAdapter
@@ -61,15 +65,13 @@ class OverviewActivity : AppCompatActivity() {
     }
 
     private fun subscribe() {
-        viewModel.contacts.observe(this, Observer<List<Contact>> {
-            it?.let {
-                if (it.isNotEmpty()) onContactLoaded(it) else onContactsEmpty()
+        viewModel.getContacts().subscribe(this, {
+            if (it.isEmpty()) {
+                onContactsEmpty()
+            } else {
+                onContactLoaded(it)
             }
-        })
-        viewModel.error.observe(this, Observer<Throwable> {
-
-        })
-        viewModel.contactInserted.observe(this, Observer<Contact> {
+        }, {
 
         })
     }
@@ -94,7 +96,11 @@ class OverviewActivity : AppCompatActivity() {
         if (requestCode == GET_CONTACT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             val contactId = ContactsActivity.getResult(data)
             contactId?.let {
-                viewModel.insertContact(contactId)
+                viewModel.insertContact(contactId).subscribe(this, {
+
+                }, {
+
+                })
             }
         }
     }
