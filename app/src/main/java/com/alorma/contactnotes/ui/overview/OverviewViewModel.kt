@@ -4,8 +4,8 @@ import android.arch.lifecycle.ViewModel
 import com.alorma.contactnotes.domain.InsertContactUseCase
 import com.alorma.contactnotes.domain.ListContactsWithNotesUseCase
 import com.alorma.contactnotes.domain.contacts.Contact
-import com.alorma.contactnotes.viewmodel.ConsumableEitherLiveData
-import com.alorma.contactnotes.viewmodel.EitherLiveData
+import com.alorma.contactnotes.arch.ConsumableEitherLiveData
+import com.alorma.contactnotes.arch.EitherLiveData
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 

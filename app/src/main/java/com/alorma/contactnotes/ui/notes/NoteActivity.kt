@@ -12,7 +12,7 @@ class NoteActivity : AppCompatActivity() {
     companion object {
         private val EXTRA_CONTACT_ID = "CONTACT_ID"
 
-        fun newInstace(context: Context, contactId: String): Intent {
+        fun newInstance(context: Context, contactId: String): Intent {
             return Intent(context, NoteActivity::class.java).apply {
                 putExtra(EXTRA_CONTACT_ID, contactId)
             }

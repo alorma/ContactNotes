@@ -3,7 +3,7 @@ package com.alorma.contactnotes.ui.notes
 import android.arch.lifecycle.ViewModel
 import com.alorma.contactnotes.domain.GetNoteFromContactUseCase
 import com.alorma.contactnotes.domain.notes.Note
-import com.alorma.contactnotes.viewmodel.ConsumableEitherLiveData
+import com.alorma.contactnotes.arch.ConsumableEitherLiveData
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 

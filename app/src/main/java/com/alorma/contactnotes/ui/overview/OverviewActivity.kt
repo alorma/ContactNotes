@@ -45,7 +45,7 @@ class OverviewActivity : AppCompatActivity() {
     private fun setupAdapter() {
         recyclerOverview.layoutManager = GridLayoutManager(this, 2)
         contactsAdapter = ContactsOverviewAdapter({
-            startActivity(NoteActivity.newInstace(this@OverviewActivity, it.rawId))
+            startActivity(NoteActivity.newInstance(this@OverviewActivity, it.rawId))
         })
         recyclerOverview.adapter = contactsAdapter
     }

@@ -1,4 +1,4 @@
-package com.alorma.contactnotes.viewmodel
+package com.alorma.contactnotes.arch
 
 import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.MutableLiveData
