@@ -10,7 +10,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@null"
+        android:gravity="top"
         android:inputType="text"
-        tools:ignore="LabelFor"/>
+        android:padding="8dp"
+        tools:ignore="LabelFor"
+        tools:text="AAAA"/>
 
 </LinearLayout>
