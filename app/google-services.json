@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "902707191871",
+    "firebase_url": "https://contactnotes-484fb.firebaseio.com",
+    "project_id": "contactnotes-484fb",
+    "storage_bucket": "contactnotes-484fb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:902707191871:android:c24fba208c86e0d8",
+        "android_client_info": {
+          "package_name": "com.alorma.contactnotes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "902707191871-7coonvkhi5s5ocnjr4r86a9a94vvadj9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.alorma.contactnotes",
+            "certificate_hash": "a0173d519a83f6294a668448f92a15023aad6607"
+          }
+        },
+        {
+          "client_id": "902707191871-unieeifn0b1fq2vf1iqnrsngng2ij1e1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5G27T2F02pibUN-9qE2GnhkQP5nqmsGw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "902707191871-unieeifn0b1fq2vf1iqnrsngng2ij1e1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

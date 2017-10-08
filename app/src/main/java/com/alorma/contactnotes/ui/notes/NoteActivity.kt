@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.MenuItem
 import android.widget.EditText
 import com.alorma.contactnotes.R
 
@@ -27,6 +28,10 @@ class NoteActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_note_editor)
 
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+        }
+
         viewModel = NotesInjector.provideOverviewViewModel(this)
 
         viewModel.getNote().subscribe(this, {
@@ -36,5 +41,12 @@ class NoteActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             intent?.getStringExtra(EXTRA_CONTACT_ID)?.let { viewModel.loadData(it) }
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            android.R.id.home -> finish()
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

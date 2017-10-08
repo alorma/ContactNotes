@@ -2,11 +2,12 @@ package com.alorma.contactnotes.arch
 
 import android.arch.lifecycle.MutableLiveData
 import io.reactivex.MaybeObserver
+import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
 import org.reactivestreams.Subscriber
 import org.reactivestreams.Subscription
 
-class ConsumableEitherLiveData<T> : EitherLiveData<T>(), Subscriber<T>, MaybeObserver<T> {
+class ConsumableEitherLiveData<T> : EitherLiveData<T>(), Subscriber<T>, SingleObserver<T>, MaybeObserver<T> {
 
     val disposableLiveData = MutableLiveData<Disposable>()
     val subscribedLiveData = MutableLiveData<Subscription>()

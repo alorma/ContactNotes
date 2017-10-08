@@ -5,20 +5,17 @@ import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.support.v4.app.FragmentActivity
-import com.alorma.contactnotes.data.AppDatabase
 import com.alorma.contactnotes.data.contacts.AndroidContactsDataSource
 import com.alorma.contactnotes.data.contacts.ContactsDataSource
-import com.alorma.contactnotes.data.contacts.RoomContactsDataSource
-import com.alorma.contactnotes.data.contacts.persistance.ContactsDAO
-import com.alorma.contactnotes.data.notes.NotesDataSource
-import com.alorma.contactnotes.data.notes.RoomNotesDataSource
-import com.alorma.contactnotes.data.notes.persistance.NotesDAO
-import com.alorma.contactnotes.domain.GetNoteFromContactUseCase
+import com.alorma.contactnotes.data.contacts.FirebaseStorageContactsDataSource
 import com.alorma.contactnotes.domain.contacts.ContactsRepository
 import com.alorma.contactnotes.domain.InsertContactUseCase
 import com.alorma.contactnotes.domain.ListContactsWithNotesUseCase
 import com.alorma.contactnotes.domain.ListExternalContactsUseCase
 import com.alorma.contactnotes.domain.notes.NotesRepository
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
 
 open class Injector {
 
@@ -30,24 +27,25 @@ open class Injector {
     private fun provideAppViewModelFactory(context: Context): ViewModelProvider.Factory {
         return AppViewModelFactory(provideListExternalContactsUseCase(context),
                 provideListContactsWithNotesUseCase(context),
-                provideInsertContactUseCase(context),
-                provideGetNoteFromContact(context))
+                provideInsertContactUseCase(context))
     }
 
     private fun provideContactsRepository(context: Context): ContactsRepository {
-        return ContactsRepository(provideSystemContactsDataSource(context), provideLocalContactsDataSource(context))
+        return ContactsRepository(provideSystemContactsDataSource(context), provideContactsDataSource())
     }
 
     private fun provideSystemContactsDataSource(context: Context): ContactsDataSource {
         return AndroidContactsDataSource(context)
     }
 
-    private fun provideContactsDatabase(context: Context): ContactsDAO {
-        return AppDatabase.getInstance(context).contactsDao()
-    }
+    private fun provideContactsDataSource(): FirebaseStorageContactsDataSource {
 
-    private fun provideLocalContactsDataSource(context: Context): RoomContactsDataSource {
-        return RoomContactsDataSource(provideContactsDatabase(context))
+        val settings = FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build()
+        val db = FirebaseFirestore.getInstance()
+        db.firestoreSettings = settings
+        return FirebaseStorageContactsDataSource(FirebaseAuth.getInstance(), db)
     }
 
     private fun provideListExternalContactsUseCase(context: Context): ListExternalContactsUseCase {
@@ -55,27 +53,14 @@ open class Injector {
     }
 
     private fun provideListContactsWithNotesUseCase(context: Context): ListContactsWithNotesUseCase {
-        return ListContactsWithNotesUseCase(provideContactsRepository(context), provideNotesRepository(context))
+        return ListContactsWithNotesUseCase(provideContactsRepository(context), provideNotesRepository())
     }
 
     private fun provideInsertContactUseCase(context: Context): InsertContactUseCase {
-        return InsertContactUseCase(provideContactsRepository(context), provideNotesRepository(context))
+        return InsertContactUseCase(provideContactsRepository(context))
     }
 
-    private fun provideNotesRepository(context: Context): NotesRepository {
-        return NotesRepository(provideNotesDataSource(context))
+    private fun provideNotesRepository(): NotesRepository {
+        return NotesRepository()
     }
-
-    private fun provideNotesDataSource(context: Context): NotesDataSource {
-        return RoomNotesDataSource(provideNotesDatabase(context))
-    }
-
-    private fun provideNotesDatabase(context: Context): NotesDAO {
-        return AppDatabase.getInstance(context).notesDao()
-    }
-
-    private fun provideGetNoteFromContact(context: Context): GetNoteFromContactUseCase {
-        return GetNoteFromContactUseCase(provideNotesRepository(context))
-    }
-
 }

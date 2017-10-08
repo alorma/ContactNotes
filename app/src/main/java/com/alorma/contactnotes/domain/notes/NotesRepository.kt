@@ -1,17 +1,9 @@
-package com.alorma.contactnotes.domain.notes
+package com.alorma.contactnotes.domain.notes;
 
-import com.alorma.contactnotes.data.notes.NotesDataSource
-import com.alorma.contactnotes.domain.notes.Note
-import io.reactivex.Flowable
-import io.reactivex.Single
-import java.util.*
+import io.reactivex.Maybe
 
-class NotesRepository(private val dataSource: NotesDataSource) {
-    fun addDefaultNote(userId: String): Single<Note> {
-        return dataSource.insertNote(userId, Note("Example first note for user $userId"))
-    }
-
-    fun getNotesFromUser(userId: String): Single<List<Note>> {
-        return dataSource.getNotesByUser(userId)
+class NotesRepository {
+    fun getNotesFromUser(userId: String): Maybe<List<Note>> {
+        return Maybe.just(listOf(Note("$userId -  AAAAA")))
     }
 }

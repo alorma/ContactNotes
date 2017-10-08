@@ -10,5 +10,5 @@ interface ContactsDataSource {
 
     fun getContactByRawId(rawId: String): Maybe<Contact>
 
-    fun insertContact(it: Contact): Completable
+    fun insertContact(contact: Contact): Completable
 }
