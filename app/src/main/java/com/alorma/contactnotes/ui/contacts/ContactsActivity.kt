@@ -45,12 +45,12 @@ class ContactsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_contacts)
 
         viewModel = ContactsInjection.provideContactsViewModel(this)
-        setupRecyler()
+        setupRecycler()
         checkPermission()
         subscribe()
     }
 
-    private fun setupRecyler() {
+    private fun setupRecycler() {
         val recyclerView = findViewById<RecyclerView>(R.id.recycler)
         recyclerView.layoutManager = GridLayoutManager(this, 2)
         contactsAdapter = ContactsAdapter({

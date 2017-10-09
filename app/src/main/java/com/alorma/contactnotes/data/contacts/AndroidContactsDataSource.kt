@@ -2,6 +2,7 @@ package com.alorma.contactnotes.data.contacts
 
 import android.content.ContentProviderClient
 import android.content.Context
+import android.net.Uri
 import android.provider.ContactsContract
 import com.alorma.contactnotes.domain.contacts.Contact
 import io.reactivex.Completable
@@ -10,6 +11,12 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 
 class AndroidContactsDataSource(private val context: Context) : ContactsDataSource {
+    companion object {
+        val QUERY_URI: Uri = ContactsContract.RawContacts.CONTENT_URI
+        val RAW_CONTACT_ID = ContactsContract.RawContacts.SOURCE_ID
+        val DISPLAY_NAME = ContactsContract.Contacts.DISPLAY_NAME_PRIMARY
+    }
+
     override fun getContacts(): Flowable<List<Contact>> {
         return Flowable.fromCallable({
             loadContacts()
@@ -18,17 +25,16 @@ class AndroidContactsDataSource(private val context: Context) : ContactsDataSour
 
     private fun loadContacts(): List<Contact> {
         val contacts = mutableListOf<Contact>()
-        getContactsProvider().query(ContactsContract.Contacts.CONTENT_URI, null, null, null,
+
+        getContactsProvider().query(QUERY_URI, null, null, null,
                 ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)?.use { cursor ->
 
-            val nameIndex = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)
-            val rawIndex = cursor.getColumnIndex(ContactsContract.Contacts.NAME_RAW_CONTACT_ID)
-            val photoIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Photo.PHOTO_THUMBNAIL_URI)
+            val nameIndex = cursor.getColumnIndex(DISPLAY_NAME)
+            val rawIndex = cursor.getColumnIndex(RAW_CONTACT_ID)
             while (cursor.moveToNext()) {
                 val rawId = cursor.getString(rawIndex)
                 val name = cursor.getString(nameIndex)
-                val photo = cursor.getString(photoIndex)
-                contacts.add(Contact(rawId, name, photo))
+                contacts.add(Contact(rawId, name))
             }
         }
 
@@ -39,30 +45,27 @@ class AndroidContactsDataSource(private val context: Context) : ContactsDataSour
         return Single.fromCallable {
             getContactsProvider()
         }.map {
-            val selection = ContactsContract.Contacts.NAME_RAW_CONTACT_ID + " = ?"
             val selectionArgs = arrayOf(rawId)
-            it.query(ContactsContract.Contacts.CONTENT_URI, null, selection, selectionArgs, null)
+            it.query(QUERY_URI, null, "$RAW_CONTACT_ID = ?", selectionArgs, null)
         }.filter {
             it.moveToFirst()
         }.map {
-            val nameIndex = it.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)
-            val rawIndex = it.getColumnIndex(ContactsContract.Contacts.NAME_RAW_CONTACT_ID)
-            val photoIndex = it.getColumnIndex(ContactsContract.CommonDataKinds.Photo.PHOTO_THUMBNAIL_URI)
+            val nameIndex = it.getColumnIndex(DISPLAY_NAME)
+            val rawIndex = it.getColumnIndex(RAW_CONTACT_ID)
 
             val id = it.getString(rawIndex)
             val name = it.getString(nameIndex)
-            val photo = it.getString(photoIndex)
 
-            Contact(id, name, photo)
+            Contact(id, name)
         }
     }
 
     private fun getContactsProvider(): ContentProviderClient {
         val contentResolver = context.contentResolver
-        return contentResolver.acquireContentProviderClient(ContactsContract.Contacts.CONTENT_URI)
+        return contentResolver.acquireContentProviderClient(QUERY_URI)
     }
 
-    override fun insertContact(it: Contact): Completable {
+    override fun insertContact(contact: Contact): Completable {
         return Completable.never()
     }
 
