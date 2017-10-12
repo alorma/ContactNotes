@@ -8,8 +8,8 @@ import android.support.v4.app.FragmentActivity
 import com.alorma.contactnotes.data.contacts.AndroidContactsDataSource
 import com.alorma.contactnotes.data.contacts.ContactsDataSource
 import com.alorma.contactnotes.data.contacts.FirebaseStorageContactsDataSource
+import com.alorma.contactnotes.data.notes.FirebaseNotesDataSource
 import com.alorma.contactnotes.domain.contacts.ContactsRepository
-import com.alorma.contactnotes.domain.InsertContactUseCase
 import com.alorma.contactnotes.domain.ListContactsWithNotesUseCase
 import com.alorma.contactnotes.domain.ListExternalContactsUseCase
 import com.alorma.contactnotes.domain.notes.NotesRepository
@@ -30,36 +30,40 @@ open class Injector {
         )
     }
 
-    private fun provideContactsRepository(context: Context): ContactsRepository {
-        return ContactsRepository(provideSystemContactsDataSource(context), provideContactsDataSource())
+    private fun provideContactsRepository(): ContactsRepository {
+        return ContactsRepository(provideSystemContactsDataSource(), provideContactsDataSource())
     }
 
-    private fun provideSystemContactsDataSource(context: Context): ContactsDataSource {
+    private fun provideSystemContactsDataSource(): ContactsDataSource {
         return AndroidContactsDataSource()
     }
 
     private fun provideContactsDataSource(): FirebaseStorageContactsDataSource {
+        return FirebaseStorageContactsDataSource(FirebaseAuth.getInstance(), provideFirebaseStorage())
+    }
+
+    private fun provideFirebaseStorage(): FirebaseFirestore {
         val settings = FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(true)
                 .build()
         val db = FirebaseFirestore.getInstance()
         db.firestoreSettings = settings
-        return FirebaseStorageContactsDataSource(FirebaseAuth.getInstance(), db)
+        return db
     }
 
     private fun provideListExternalContactsUseCase(context: Context): ListExternalContactsUseCase {
-        return ListExternalContactsUseCase(provideContactsRepository(context))
+        return ListExternalContactsUseCase(provideContactsRepository())
     }
 
     private fun provideListContactsWithNotesUseCase(context: Context): ListContactsWithNotesUseCase {
-        return ListContactsWithNotesUseCase(provideContactsRepository(context), provideNotesRepository())
-    }
-
-    private fun provideInsertContactUseCase(context: Context): InsertContactUseCase {
-        return InsertContactUseCase(provideContactsRepository(context))
+        return ListContactsWithNotesUseCase(provideContactsRepository(), provideNotesRepository())
     }
 
     private fun provideNotesRepository(): NotesRepository {
-        return NotesRepository()
+        return NotesRepository(provideFirebaseNotesDataSource())
+    }
+
+    private fun provideFirebaseNotesDataSource(): FirebaseNotesDataSource {
+        return FirebaseNotesDataSource(FirebaseAuth.getInstance(), provideFirebaseStorage())
     }
 }

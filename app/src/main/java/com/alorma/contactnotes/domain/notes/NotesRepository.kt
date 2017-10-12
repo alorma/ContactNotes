@@ -1,9 +1,10 @@
 package com.alorma.contactnotes.domain.notes;
 
-import io.reactivex.Maybe
+import com.alorma.contactnotes.data.notes.FirebaseNotesDataSource
+import io.reactivex.Flowable
 
-class NotesRepository {
-    fun getNotesFromUser(userId: String): Maybe<List<Note>> {
-        return Maybe.empty()
+class NotesRepository(private val remote: FirebaseNotesDataSource) {
+    fun getNotesFromUser(userId: String): Flowable<List<Note>> {
+        return remote.getNotesByUser(userId)
     }
 }

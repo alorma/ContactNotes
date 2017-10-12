@@ -28,7 +28,7 @@ class ListNotesViewModel(private val getNotesUseCase: GetNotesFromContactUseCase
     }
 
     fun createNote() {
-        items.add(Note(UUID.randomUUID().toString()))
+        items.add(Note(UUID.randomUUID().toString(), UUID.randomUUID().toString()))
         addNoteLiveData.postValue(true)
         notesLiveData.postValue(items)
     }

@@ -7,7 +7,6 @@ import io.reactivex.Flowable
 class GetNotesFromContactUseCase(private val notesRepository: NotesRepository) {
     fun execute(contactId: String): Flowable<List<Note>> {
         return notesRepository.getNotesFromUser(contactId)
-                .toFlowable()
                 .defaultIfEmpty(listOf())
     }
 }
