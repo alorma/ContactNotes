@@ -1,4 +1,4 @@
-package com.alorma.contactnotes.ui.contacts
+package com.alorma.contactnotes.ui.contacts.pick
 
 import android.Manifest
 import android.app.Activity
@@ -82,7 +82,7 @@ class ContactsActivity : AppCompatActivity() {
             }
         })
         viewModel.errorLiveData.observe(this, Observer<Throwable> {
-
+            it?.printStackTrace()
         })
     }
 

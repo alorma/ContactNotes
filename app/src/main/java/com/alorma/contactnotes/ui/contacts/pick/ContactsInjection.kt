@@ -1,4 +1,4 @@
-package com.alorma.contactnotes.ui.contacts
+package com.alorma.contactnotes.ui.contacts.pick
 
 import android.support.v4.app.FragmentActivity
 import com.alorma.contactnotes.ui.Injector

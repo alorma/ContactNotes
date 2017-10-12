@@ -35,7 +35,7 @@ open class Injector {
     }
 
     private fun provideSystemContactsDataSource(context: Context): ContactsDataSource {
-        return AndroidContactsDataSource(context)
+        return AndroidContactsDataSource()
     }
 
     private fun provideContactsDataSource(): FirebaseStorageContactsDataSource {

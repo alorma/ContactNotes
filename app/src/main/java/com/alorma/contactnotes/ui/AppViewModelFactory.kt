@@ -2,12 +2,10 @@ package com.alorma.contactnotes.ui
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
-import com.alorma.contactnotes.domain.GetNoteFromContactUseCase
 import com.alorma.contactnotes.domain.InsertContactUseCase
 import com.alorma.contactnotes.domain.ListContactsWithNotesUseCase
 import com.alorma.contactnotes.domain.ListExternalContactsUseCase
-import com.alorma.contactnotes.ui.contacts.ContactsViewModel
-import com.alorma.contactnotes.ui.notes.NoteViewModel
+import com.alorma.contactnotes.ui.contacts.pick.ContactsViewModel
 import com.alorma.contactnotes.ui.overview.OverviewViewModel
 
 @Suppress("UNCHECKED_CAST")

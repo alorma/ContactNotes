@@ -11,7 +11,8 @@ import android.view.View.*
 import android.widget.Toast
 import com.alorma.contactnotes.R
 import com.alorma.contactnotes.domain.contacts.Contact
-import com.alorma.contactnotes.ui.contacts.ContactsActivity
+import com.alorma.contactnotes.ui.contacts.create.CreateContactActivity
+import com.alorma.contactnotes.ui.contacts.pick.ContactsActivity
 import com.alorma.contactnotes.ui.notes.NoteActivity
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -104,7 +105,7 @@ class OverviewActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailed
     }
 
     private fun openContactSelector() {
-        startActivityForResult(ContactsActivity.createIntent(this), GET_CONTACT_REQUEST_CODE)
+        startActivityForResult(CreateContactActivity.createIntent(this), GET_CONTACT_REQUEST_CODE)
     }
 
     private fun subscribe() {

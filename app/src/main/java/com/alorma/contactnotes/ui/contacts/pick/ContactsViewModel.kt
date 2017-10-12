@@ -1,4 +1,4 @@
-package com.alorma.contactnotes.ui.contacts
+package com.alorma.contactnotes.ui.contacts.pick
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel

@@ -45,6 +45,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore:11.4.2'
     implementation 'com.google.firebase:firebase-auth:11.4.2'
     implementation 'com.google.android.gms:play-services-auth:11.4.2'
+
+    implementation 'com.github.tamir7.contacts:contacts:1.1.7'
 }
 
 configurations.all {
