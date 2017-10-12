@@ -3,10 +3,13 @@ package com.alorma.contactnotes.ui.notes
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import com.alorma.contactnotes.domain.GetNotesFromContactUseCase
 import com.alorma.contactnotes.domain.notes.Note
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import java.util.*
 
-class ListNotesViewModel : ViewModel() {
+class ListNotesViewModel(private val getNotesUseCase: GetNotesFromContactUseCase) : ViewModel() {
 
     private val items = mutableListOf<Note>()
 
@@ -15,10 +18,13 @@ class ListNotesViewModel : ViewModel() {
 
     fun getData(): LiveData<List<Note>> = notesLiveData
 
-    fun load() {
-        items.add(Note("AAAA"))
-        items.add(Note("BBBB"))
-        notesLiveData.postValue(items)
+    fun load(contactId: String) {
+        getNotesUseCase.execute(contactId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    notesLiveData.postValue(it)
+                }, {})
     }
 
     fun createNote() {

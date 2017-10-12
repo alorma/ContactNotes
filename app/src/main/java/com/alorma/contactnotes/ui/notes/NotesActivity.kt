@@ -23,6 +23,8 @@ class NotesActivity : AppCompatActivity() {
                 putExtra(EXTRA_CONTACT_ID, contactId)
             }
         }
+
+        fun getContactId(intent: Intent): String = intent.getStringExtra(EXTRA_CONTACT_ID)
     }
 
     private lateinit var notesViewModel: ListNotesViewModel
@@ -40,7 +42,7 @@ class NotesActivity : AppCompatActivity() {
         subscribe()
 
         if (savedInstanceState == null) {
-            notesViewModel.load()
+            notesViewModel.load(getContactId(intent))
         }
     }
 
