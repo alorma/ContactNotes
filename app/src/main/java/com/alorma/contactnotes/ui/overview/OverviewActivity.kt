@@ -24,7 +24,7 @@ import kotlinx.android.synthetic.main.activity_overview.*
 class OverviewActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener {
 
     companion object {
-        private val GET_CONTACT_REQUEST_CODE: Int = 1234
+        private val CREATE_CONTACT_REQUEST_CODE: Int = 1234
         private val RC_SIGN_IN = 123
         private val RC_RESOLUTION = 124
     }
@@ -103,7 +103,7 @@ class OverviewActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailed
     }
 
     private fun openContactSelector() {
-        startActivityForResult(CreateContactActivity.createIntent(this), GET_CONTACT_REQUEST_CODE)
+        startActivityForResult(CreateContactActivity.createIntent(this), CREATE_CONTACT_REQUEST_CODE)
     }
 
     private fun subscribe() {
@@ -147,8 +147,10 @@ class OverviewActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailed
                 // Google Sign In failed, update UI appropriately
                 // ...
             }
-        } else if (requestCode == GET_CONTACT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-
+        } else if (requestCode == CREATE_CONTACT_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                viewModel.loadContacts()
+            }
         }
     }
 
