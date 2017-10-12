@@ -28,6 +28,7 @@ class ContactsOverviewAdapter(private val callback: (Contact) -> Unit) : Recycle
         private val contactImage: ImageView = itemView.findViewById(R.id.contactPhoto)
         private val contactName: TextView = itemView.findViewById(R.id.contactName)
         private val contactNote: TextView = itemView.findViewById(R.id.contactNote)
+        private val noNotesText: TextView = itemView.findViewById(R.id.noNotesText)
 
         fun populate(contact: Contact) {
             contactName.text = contact.name
@@ -45,6 +46,11 @@ class ContactsOverviewAdapter(private val callback: (Contact) -> Unit) : Recycle
                     val maxLength = Math.min(text.length, 100) - 1
                     val substringRange = 0..maxLength
                     contactNote.text = text[substringRange]
+                    contactNote.visibility = View.VISIBLE
+                    noNotesText.visibility = View.GONE
+                } else {
+                    contactNote.visibility = View.GONE
+                    noNotesText.visibility = View.VISIBLE
                 }
             }
 

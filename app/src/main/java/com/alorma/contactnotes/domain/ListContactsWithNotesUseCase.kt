@@ -32,6 +32,8 @@ class ListContactsWithNotesUseCase(private val contactsRepository: ContactsRepos
     }
 
     private fun getContactWithNotes(contact: Contact): Flowable<List<Note>> {
-        return notesRepository.getNotesFromUser(contact.rawId).toFlowable()
+        return notesRepository.getNotesFromUser(contact.rawId)
+                .toFlowable()
+                .defaultIfEmpty(listOf())
     }
 }

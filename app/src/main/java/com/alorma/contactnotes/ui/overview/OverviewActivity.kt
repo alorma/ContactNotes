@@ -11,7 +11,7 @@ import android.widget.Toast
 import com.alorma.contactnotes.R
 import com.alorma.contactnotes.domain.contacts.Contact
 import com.alorma.contactnotes.ui.contacts.create.CreateContactActivity
-import com.alorma.contactnotes.ui.notes.NoteActivity
+import com.alorma.contactnotes.ui.notes.NotesActivity
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -91,7 +91,7 @@ class OverviewActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailed
     private fun setupAdapter() {
         recyclerOverview.layoutManager = GridLayoutManager(this, 2)
         contactsAdapter = ContactsOverviewAdapter({
-            startActivity(NoteActivity.newInstance(this@OverviewActivity, it.rawId))
+            startActivity(NotesActivity.newInstance(this@OverviewActivity, it.rawId))
         })
         recyclerOverview.adapter = contactsAdapter
     }
@@ -134,7 +134,6 @@ class OverviewActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailed
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {

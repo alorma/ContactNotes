@@ -11,27 +11,42 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        app:cardElevation="4dp"
-        app:cardCornerRadius="4dp">
+        app:cardCornerRadius="4dp"
+        app:cardElevation="4dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/contactNote"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_gravity="end|center_vertical"
-                android:padding="8dp"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
-                app:autoSizeMaxTextSize="100sp"
-                app:autoSizeMinTextSize="12sp"
-                app:autoSizeStepGranularity="2sp"
-                app:autoSizeTextType="uniform"
-                tools:text="6dvbkeb fje r gje r goerhgoerh gjehgoue guehguehgiuh  3giuh  ouhe4oughe4ouhe4"
-                />
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/contactNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_gravity="end|center_vertical"
+                    android:padding="8dp"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
+                    app:autoSizeMaxTextSize="100sp"
+                    app:autoSizeMinTextSize="12sp"
+                    app:autoSizeStepGranularity="2sp"
+                    app:autoSizeTextType="uniform"
+                    tools:text="6dvbkeb fje r gje r goerhgoerh gjehgoue guehguehgiuh  3giuh  ouhe4oughe4ouhe4"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:gravity="center"
+                    android:text="No notes created"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Caption"
+                    android:visibility="gone"
+                    android:id="@+id/noNotesText"
+                    tools:visibility="visible"/>
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -54,8 +69,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:gravity="center_vertical"
-                    android:paddingStart="8dp"
                     android:paddingEnd="8dp"
+                    android:paddingStart="8dp"
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
                     android:textColor="#FFFFFFFF"
                     tools:text="Patata"/>

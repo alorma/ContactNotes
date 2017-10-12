@@ -26,8 +26,8 @@ open class Injector {
 
     private fun provideAppViewModelFactory(context: Context): ViewModelProvider.Factory {
         return AppViewModelFactory(provideListExternalContactsUseCase(context),
-                provideListContactsWithNotesUseCase(context),
-                provideInsertContactUseCase(context))
+                provideListContactsWithNotesUseCase(context)
+        )
     }
 
     private fun provideContactsRepository(context: Context): ContactsRepository {

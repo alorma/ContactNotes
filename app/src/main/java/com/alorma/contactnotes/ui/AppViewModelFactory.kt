@@ -10,14 +10,12 @@ import com.alorma.contactnotes.ui.overview.OverviewViewModel
 
 @Suppress("UNCHECKED_CAST")
 class AppViewModelFactory(private val listExternalContactsUseCase: ListExternalContactsUseCase,
-                          private val listContactsWithNotesUseCase: ListContactsWithNotesUseCase,
-                          private val insertContactUseCase: InsertContactUseCase) : ViewModelProvider.Factory {
+                          private val listContactsWithNotesUseCase: ListContactsWithNotesUseCase) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when (modelClass) {
             ContactsViewModel::class.java -> ContactsViewModel(listExternalContactsUseCase) as T
             OverviewViewModel::class.java -> OverviewViewModel(listContactsWithNotesUseCase) as T
-        //NoteViewModel::class.java -> NoteViewModel(getNoteFromContactUseCase) as T
             else -> throw IllegalArgumentException()
         }
     }
