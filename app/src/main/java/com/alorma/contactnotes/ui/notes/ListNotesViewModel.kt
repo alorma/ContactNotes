@@ -23,6 +23,8 @@ class ListNotesViewModel(private val getNotesUseCase: GetNotesFromContactUseCase
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
+                    items.clear()
+                    items.addAll(it)
                     notesLiveData.postValue(it)
                 }, {})
     }
