@@ -1,6 +1,7 @@
 package com.alorma.contactnotes.data.contacts
 
 import com.alorma.contactnotes.domain.contacts.Contact
+import com.alorma.contactnotes.domain.create.CreateUserForm
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
@@ -10,5 +11,5 @@ interface ContactsDataSource {
 
     fun getContactByRawId(rawId: String): Maybe<Contact>
 
-    fun insertContact(contact: Contact): Completable
+    fun insertContact(createUserForm: CreateUserForm): Completable
 }

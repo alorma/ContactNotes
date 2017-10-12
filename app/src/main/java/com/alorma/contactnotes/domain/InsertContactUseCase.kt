@@ -1,13 +1,13 @@
 package com.alorma.contactnotes.domain;
 
-import com.alorma.contactnotes.domain.contacts.Contact
 import com.alorma.contactnotes.domain.contacts.ContactsRepository
-import io.reactivex.Maybe
+import com.alorma.contactnotes.domain.create.CreateUserForm
+import io.reactivex.Completable
 
 class InsertContactUseCase(private val contactsRepository: ContactsRepository) {
 
-    fun execute(rawId: String): Maybe<Contact> {
-        return contactsRepository.insert(rawId)
+    fun execute(userForm: CreateUserForm): Completable {
+        return contactsRepository.insert(userForm)
     }
 
 }

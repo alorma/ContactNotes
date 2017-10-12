@@ -16,7 +16,7 @@ class AppViewModelFactory(private val listExternalContactsUseCase: ListExternalC
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when (modelClass) {
             ContactsViewModel::class.java -> ContactsViewModel(listExternalContactsUseCase) as T
-            OverviewViewModel::class.java -> OverviewViewModel(listContactsWithNotesUseCase, insertContactUseCase) as T
+            OverviewViewModel::class.java -> OverviewViewModel(listContactsWithNotesUseCase) as T
         //NoteViewModel::class.java -> NoteViewModel(getNoteFromContactUseCase) as T
             else -> throw IllegalArgumentException()
         }

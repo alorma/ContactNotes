@@ -39,7 +39,6 @@ open class Injector {
     }
 
     private fun provideContactsDataSource(): FirebaseStorageContactsDataSource {
-
         val settings = FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(true)
                 .build()

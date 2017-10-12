@@ -1,12 +1,15 @@
 package com.alorma.contactnotes.data.contacts
 
 import com.alorma.contactnotes.domain.contacts.Contact
+import com.alorma.contactnotes.domain.create.CreateUserForm
 import com.github.tamir7.contacts.Contacts
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
 
 class AndroidContactsDataSource : ContactsDataSource {
+
+
     override fun getContacts(): Flowable<List<Contact>> {
         return Flowable.fromCallable({
             loadContacts()
@@ -54,8 +57,5 @@ class AndroidContactsDataSource : ContactsDataSource {
         }
     }
 
-    override fun insertContact(contact: Contact): Completable {
-        return Completable.never()
-    }
-
+    override fun insertContact(createUserForm: CreateUserForm): Completable = Completable.never()
 }

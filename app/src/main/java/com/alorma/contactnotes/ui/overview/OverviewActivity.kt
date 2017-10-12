@@ -5,14 +5,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
-import android.util.Log
 import android.view.View
 import android.view.View.*
 import android.widget.Toast
 import com.alorma.contactnotes.R
 import com.alorma.contactnotes.domain.contacts.Contact
 import com.alorma.contactnotes.ui.contacts.create.CreateContactActivity
-import com.alorma.contactnotes.ui.contacts.pick.ContactsActivity
 import com.alorma.contactnotes.ui.notes.NoteActivity
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -150,14 +148,7 @@ class OverviewActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailed
                 // ...
             }
         } else if (requestCode == GET_CONTACT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val contactId = ContactsActivity.getResult(data)
-            contactId?.let {
-                viewModel.insertContact(contactId).subscribe(this, {
 
-                }, {
-                    Log.e("InsertContact", "", it)
-                })
-            }
         }
     }
 

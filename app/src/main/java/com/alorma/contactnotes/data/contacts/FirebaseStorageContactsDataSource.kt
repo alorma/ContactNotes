@@ -1,6 +1,7 @@
 package com.alorma.contactnotes.data.contacts
 
 import com.alorma.contactnotes.domain.contacts.Contact
+import com.alorma.contactnotes.domain.create.CreateUserForm
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -20,6 +21,8 @@ class FirebaseStorageContactsDataSource(auth: FirebaseAuth, private val db: Fire
     companion object {
         val CONTACTS_COLLECTION = "contacts"
         val CONTACT_DOCUMENT_ROW_NAME = "NAME"
+        val CONTACT_DOCUMENT_ROW_EMAIL = "EMAIL"
+        val CONTACT_DOCUMENT_ROW_PHONE = "PHONE"
     }
 
     private val currentUser = auth.currentUser
@@ -63,15 +66,25 @@ class FirebaseStorageContactsDataSource(auth: FirebaseAuth, private val db: Fire
         return Maybe.empty()
     }
 
-    override fun insertContact(contact: Contact): Completable {
+    override fun insertContact(createUserForm: CreateUserForm): Completable {
         return Completable.fromPublisher<Nothing> { subscriber ->
 
             if (currentUser != null) {
                 val map = HashMap<String, Any>().apply {
-                    put(CONTACT_DOCUMENT_ROW_NAME, contact.name)
+                    put(CONTACT_DOCUMENT_ROW_NAME, createUserForm.userName)
+                    createUserForm.userEmail?.let {
+                        if (it.isNotEmpty()) {
+                            put(CONTACT_DOCUMENT_ROW_EMAIL, it)
+                        }
+                    }
+                    createUserForm.userPhone?.let {
+                        if (it.isNotEmpty()) {
+                            put(CONTACT_DOCUMENT_ROW_PHONE, it)
+                        }
+                    }
                 }
 
-                buildCollection(currentUser).document(contact.rawId)
+                buildCollection(currentUser).document(UUID.randomUUID().toString())
                         .set(map, SetOptions.merge())
                         .addOnSuccessListener {
                             subscriber.onComplete()
