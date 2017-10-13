@@ -74,27 +74,8 @@ class FirebaseStorageContactsDataSource(auth: FirebaseAuth, private val db: Fire
         return Completable.fromPublisher<Nothing> { subscriber ->
 
             if (currentUser != null) {
-                val map = HashMap<String, Any>().apply {
-                    put(CONTACT_DOCUMENT_ROW_NAME, createUserForm.userName)
-                    createUserForm.userEmail?.let {
-                        if (it.isNotEmpty()) {
-                            put(CONTACT_DOCUMENT_ROW_EMAIL, it)
-                        }
-                    }
-                    createUserForm.userPhone?.let {
-                        if (it.isNotEmpty()) {
-                            put(CONTACT_DOCUMENT_ROW_PHONE, it)
-                        }
-                    }
-                    createUserForm.lookup?.let {
-                        if (it.isNotEmpty()) {
-                            put(CONTACT_DOCUMENT_ROW_LOOKUP, normalizeLookup(it))
-                        }
-                    }
-                }
-
                 buildCollection(currentUser).document(UUID.randomUUID().toString())
-                        .set(map, SetOptions.merge())
+                        .set(buildMapForFirebase(createUserForm), SetOptions.merge())
                         .addOnSuccessListener {
                             subscriber.onComplete()
                         }
@@ -111,27 +92,8 @@ class FirebaseStorageContactsDataSource(auth: FirebaseAuth, private val db: Fire
         return Completable.fromPublisher<Nothing> { subscriber ->
 
             if (currentUser != null) {
-                val map = HashMap<String, Any>().apply {
-                    put(CONTACT_DOCUMENT_ROW_NAME, createUserForm.userName)
-                    createUserForm.userEmail?.let {
-                        if (it.isNotEmpty()) {
-                            put(CONTACT_DOCUMENT_ROW_EMAIL, it)
-                        }
-                    }
-                    createUserForm.userPhone?.let {
-                        if (it.isNotEmpty()) {
-                            put(CONTACT_DOCUMENT_ROW_PHONE, it)
-                        }
-                    }
-                    createUserForm.lookup?.let {
-                        if (it.isNotEmpty()) {
-                            put(CONTACT_DOCUMENT_ROW_LOOKUP, normalizeLookup(it))
-                        }
-                    }
-                }
-
                 buildCollection(currentUser).document(id)
-                        .set(map, SetOptions.merge())
+                        .update(buildMapForFirebase(createUserForm))
                         .addOnSuccessListener {
                             subscriber.onComplete()
                         }
@@ -140,6 +102,25 @@ class FirebaseStorageContactsDataSource(auth: FirebaseAuth, private val db: Fire
                         }
             } else {
                 subscriber.onError(Exception("Not logged"))
+            }
+        }
+    }
+
+    private fun buildMapForFirebase(createUserForm: CreateUserForm): HashMap<String, Any> = HashMap<String, Any>().apply {
+        put(CONTACT_DOCUMENT_ROW_NAME, createUserForm.userName)
+        createUserForm.userEmail?.let {
+            if (it.isNotEmpty()) {
+                put(CONTACT_DOCUMENT_ROW_EMAIL, it)
+            }
+        }
+        createUserForm.userPhone?.let {
+            if (it.isNotEmpty()) {
+                put(CONTACT_DOCUMENT_ROW_PHONE, it)
+            }
+        }
+        createUserForm.lookup?.let {
+            if (it.isNotEmpty()) {
+                put(CONTACT_DOCUMENT_ROW_LOOKUP, normalizeLookup(it))
             }
         }
     }
