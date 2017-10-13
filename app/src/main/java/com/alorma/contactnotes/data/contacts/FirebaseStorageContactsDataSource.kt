@@ -5,10 +5,7 @@ import com.alorma.contactnotes.domain.create.CreateUserForm
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
@@ -74,14 +71,8 @@ class FirebaseStorageContactsDataSource(auth: FirebaseAuth, private val db: Fire
         return Completable.fromPublisher<Nothing> { subscriber ->
 
             if (currentUser != null) {
-                buildCollection(currentUser).document(UUID.randomUUID().toString())
-                        .set(buildMapForFirebase(createUserForm), SetOptions.merge())
-                        .addOnSuccessListener {
-                            subscriber.onComplete()
-                        }
-                        .addOnFailureListener {
-                            subscriber.onError(it)
-                        }
+                val documentReference = buildCollection(currentUser).document(UUID.randomUUID().toString())
+                workWithDocumentRef(documentReference, createUserForm, subscriber)
             } else {
                 subscriber.onError(Exception("Not logged"))
             }
@@ -92,18 +83,23 @@ class FirebaseStorageContactsDataSource(auth: FirebaseAuth, private val db: Fire
         return Completable.fromPublisher<Nothing> { subscriber ->
 
             if (currentUser != null) {
-                buildCollection(currentUser).document(id)
-                        .update(buildMapForFirebase(createUserForm))
-                        .addOnSuccessListener {
-                            subscriber.onComplete()
-                        }
-                        .addOnFailureListener {
-                            subscriber.onError(it)
-                        }
+                val documentReference = buildCollection(currentUser).document(id)
+                workWithDocumentRef(documentReference, createUserForm, subscriber)
             } else {
                 subscriber.onError(Exception("Not logged"))
             }
         }
+    }
+
+    private fun workWithDocumentRef(documentReference: DocumentReference, createUserForm: CreateUserForm, subscriber: Subscriber<in Nothing>) {
+        documentReference
+                .update(buildMapForFirebase(createUserForm))
+                .addOnSuccessListener {
+                    subscriber.onComplete()
+                }
+                .addOnFailureListener {
+                    subscriber.onError(it)
+                }
     }
 
     private fun buildMapForFirebase(createUserForm: CreateUserForm): HashMap<String, Any> = HashMap<String, Any>().apply {
