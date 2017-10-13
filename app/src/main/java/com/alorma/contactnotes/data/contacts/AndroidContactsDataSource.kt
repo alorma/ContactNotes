@@ -1,6 +1,7 @@
 package com.alorma.contactnotes.data.contacts
 
 import android.content.ContentResolver
+import android.database.Cursor
 import android.net.Uri
 import android.provider.ContactsContract
 import com.alorma.contactnotes.domain.contacts.Contact
@@ -43,11 +44,42 @@ class AndroidContactsDataSource(private val contentResolver: ContentResolver) : 
 
                 cursor.close()
 
-                Contact(id, name, lookup = lookup)
+                val email: String? = loadEmail(id)
+                val phone: String? = loadPhone(id)
+
+                Contact(id, name, lookup = lookup, userEmail = email, userPhone = phone)
             } else {
                 throw Exception()
             }
         })
+    }
+
+    private fun loadEmail(id: String): String? {
+        val cur1 = contentResolver.query(
+                ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
+                ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?",
+                arrayOf(id), null, null)
+        var email: String? = null
+        if (cur1.moveToFirst()) {
+            email = cur1.getString(cur1.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA))
+        }
+
+        cur1.close()
+        return email
+    }
+
+    private fun loadPhone(id: String): String? {
+        val cur1 = contentResolver.query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                arrayOf(id), null, null)
+        var phone: String? = null
+        if (cur1.moveToFirst()) {
+            phone = cur1.getString(cur1.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DATA))
+        }
+
+        cur1.close()
+        return phone
     }
 
     override fun getLookupKey(contactUri: String): Single<String> {

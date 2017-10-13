@@ -60,7 +60,10 @@ class FirebaseStorageContactsDataSource(auth: FirebaseAuth, private val db: Fire
     private fun parseItem(contactDocument: DocumentSnapshot): Contact {
         val id = contactDocument.id
         val name = contactDocument.data[CONTACT_DOCUMENT_ROW_NAME] as String
-        return Contact(id, name)
+        val email = contactDocument.data[CONTACT_DOCUMENT_ROW_EMAIL]?.let { it as String }
+        val phone = contactDocument.data[CONTACT_DOCUMENT_ROW_PHONE]?.let { it as String }
+        val lookup = contactDocument.data[CONTACT_DOCUMENT_ROW_LOOKUP]?.let { it as String }
+        return Contact(id, name, userEmail = email, userPhone = phone, lookup = lookup)
     }
 
     override fun getContactByRawId(rawId: String): Maybe<Contact> {
