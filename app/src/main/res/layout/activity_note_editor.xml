@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:background="@null"
         android:gravity="top"
-        android:inputType="text"
+        android:inputType="textMultiLine"
         android:padding="8dp"
         tools:ignore="LabelFor"
         tools:text="AAAA"/>
