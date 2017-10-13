@@ -5,7 +5,10 @@ import com.alorma.contactnotes.domain.create.CreateUserForm
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.*
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.SetOptions
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
@@ -29,9 +32,11 @@ class FirebaseStorageContactsDataSource(auth: FirebaseAuth, private val db: Fire
         val deferred: DeferredScalarSubscription<Contact> = DeferredScalarSubscription(subscriber)
         subscriber.onSubscribe(deferred)
         if (currentUser != null) {
-            buildCollection(currentUser).get().addOnCompleteListener { task ->
+            buildCollection().get().addOnCompleteListener { task ->
                 parseTask(task, subscriber)
                 subscriber.onComplete()
+            }.addOnFailureListener {
+                subscriber.onError(it)
             }
         } else {
             subscriber.onError(Exception("Not logged"))
@@ -71,11 +76,21 @@ class FirebaseStorageContactsDataSource(auth: FirebaseAuth, private val db: Fire
         return Completable.fromPublisher<Nothing> { subscriber ->
 
             if (currentUser != null) {
-                val documentReference = buildCollection(currentUser).document(UUID.randomUUID().toString())
-                workWithDocumentRef(documentReference, createUserForm, subscriber)
+                val document = buildCollection().document(UUID.randomUUID().toString())
+                val task = document
+                        .set(buildMapForFirebase(createUserForm), SetOptions.merge())
+                runDocumentTask(task, subscriber)
             } else {
                 subscriber.onError(Exception("Not logged"))
             }
+        }
+    }
+
+    private fun runDocumentTask(task: Task<Void>, subscriber: Subscriber<in Nothing>) {
+        task.addOnSuccessListener {
+            subscriber.onComplete()
+        }.addOnFailureListener {
+            subscriber.onError(it)
         }
     }
 
@@ -83,23 +98,13 @@ class FirebaseStorageContactsDataSource(auth: FirebaseAuth, private val db: Fire
         return Completable.fromPublisher<Nothing> { subscriber ->
 
             if (currentUser != null) {
-                val documentReference = buildCollection(currentUser).document(id)
-                workWithDocumentRef(documentReference, createUserForm, subscriber)
+                val document = buildCollection().document(id)
+                val task = document.update(buildMapForFirebase(createUserForm))
+                runDocumentTask(task, subscriber)
             } else {
                 subscriber.onError(Exception("Not logged"))
             }
         }
-    }
-
-    private fun workWithDocumentRef(documentReference: DocumentReference, createUserForm: CreateUserForm, subscriber: Subscriber<in Nothing>) {
-        documentReference
-                .update(buildMapForFirebase(createUserForm))
-                .addOnSuccessListener {
-                    subscriber.onComplete()
-                }
-                .addOnFailureListener {
-                    subscriber.onError(it)
-                }
     }
 
     private fun buildMapForFirebase(createUserForm: CreateUserForm): HashMap<String, Any> = HashMap<String, Any>().apply {
@@ -127,7 +132,7 @@ class FirebaseStorageContactsDataSource(auth: FirebaseAuth, private val db: Fire
             subscriber.onSubscribe(deferred)
 
             if (currentUser != null) {
-                buildContactDocument(currentUser, normalizeLookup(lookup)).get().addOnCompleteListener { task ->
+                buildContactDocument(normalizeLookup(lookup)).get().addOnCompleteListener { task ->
                     parseTask(task, subscriber)
                     subscriber.onComplete()
                 }
@@ -143,10 +148,10 @@ class FirebaseStorageContactsDataSource(auth: FirebaseAuth, private val db: Fire
         return Single.never()
     }
 
-    private fun buildCollection(currentUser: FirebaseUser) =
-            db.document("users/${currentUser.uid}").collection(CONTACTS_COLLECTION)
+    private fun buildCollection() =
+            db.document("users/${currentUser?.uid}").collection(CONTACTS_COLLECTION)
 
-    private fun buildContactDocument(currentUser: FirebaseUser, lookup: String) =
-            db.document("users/${currentUser.uid}").collection(CONTACTS_COLLECTION)
+    private fun buildContactDocument(lookup: String) =
+            db.document("users/${currentUser?.uid}").collection(CONTACTS_COLLECTION)
                     .whereEqualTo(CONTACT_DOCUMENT_ROW_LOOKUP, lookup)
 }
