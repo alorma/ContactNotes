@@ -32,7 +32,7 @@ class ContactsActivity : AppCompatActivity() {
 
         fun createReturnIntent(contact: Contact): Intent {
             val intent = Intent()
-            intent.putExtra(EXTRA_CONTACT, contact.rawId)
+            intent.putExtra(EXTRA_CONTACT, contact.id)
             return intent
         }
     }

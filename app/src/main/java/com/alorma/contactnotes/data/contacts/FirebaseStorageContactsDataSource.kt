@@ -107,6 +107,43 @@ class FirebaseStorageContactsDataSource(auth: FirebaseAuth, private val db: Fire
         }
     }
 
+    override fun update(id: String, createUserForm: CreateUserForm): Completable {
+        return Completable.fromPublisher<Nothing> { subscriber ->
+
+            if (currentUser != null) {
+                val map = HashMap<String, Any>().apply {
+                    put(CONTACT_DOCUMENT_ROW_NAME, createUserForm.userName)
+                    createUserForm.userEmail?.let {
+                        if (it.isNotEmpty()) {
+                            put(CONTACT_DOCUMENT_ROW_EMAIL, it)
+                        }
+                    }
+                    createUserForm.userPhone?.let {
+                        if (it.isNotEmpty()) {
+                            put(CONTACT_DOCUMENT_ROW_PHONE, it)
+                        }
+                    }
+                    createUserForm.lookup?.let {
+                        if (it.isNotEmpty()) {
+                            put(CONTACT_DOCUMENT_ROW_LOOKUP, normalizeLookup(it))
+                        }
+                    }
+                }
+
+                buildCollection(currentUser).document(id)
+                        .set(map, SetOptions.merge())
+                        .addOnSuccessListener {
+                            subscriber.onComplete()
+                        }
+                        .addOnFailureListener {
+                            subscriber.onError(it)
+                        }
+            } else {
+                subscriber.onError(Exception("Not logged"))
+            }
+        }
+    }
+
     override fun loadContactByLookup(lookup: String): Single<Contact> {
         return Single.fromPublisher({ subscriber ->
             val deferred: DeferredScalarSubscription<Contact> = DeferredScalarSubscription(subscriber)

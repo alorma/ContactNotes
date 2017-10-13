@@ -11,6 +11,8 @@ interface ContactsDataSource {
 
     fun insertContact(createUserForm: CreateUserForm): Completable
 
+    fun update(id: String, createUserForm: CreateUserForm): Completable
+
     fun loadContactByLookup(lookup: String): Single<Contact>
 
     fun getLookupKey(contactUri: String): Single<String>

@@ -91,7 +91,7 @@ class OverviewActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailed
     private fun setupAdapter() {
         recyclerOverview.layoutManager = GridLayoutManager(this, 2)
         contactsAdapter = ContactsOverviewAdapter({
-            startActivity(NotesActivity.newInstance(this@OverviewActivity, it.rawId))
+            startActivity(NotesActivity.newInstance(this@OverviewActivity, it.id))
         })
         recyclerOverview.adapter = contactsAdapter
     }

@@ -12,7 +12,6 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 
 class AndroidContactsDataSource(private val contentResolver: ContentResolver) : ContactsDataSource {
-
     companion object {
         val LOOKUP_URI = "content://com.android.contacts/contacts/lookup/"
     }
@@ -26,6 +25,8 @@ class AndroidContactsDataSource(private val contentResolver: ContentResolver) : 
     }
 
     override fun insertContact(createUserForm: CreateUserForm): Completable = Completable.never()
+
+    override fun update(id: String, createUserForm: CreateUserForm): Completable = Completable.never()
 
     private fun loadContact(contactUri: String): Single<Contact> {
         return Single.fromCallable({
