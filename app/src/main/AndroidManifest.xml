@@ -23,6 +23,7 @@
         <activity android:name=".ui.contacts.pick.ContactsActivity"/>
         <activity android:name=".ui.notes.NotesActivity"/>
         <activity android:name=".ui.contacts.create.CreateContactActivity"/>
+        <activity android:name=".ui.note.NoteActivity"/>
 
         <meta-data
             android:name="io.fabric.ApiKey"

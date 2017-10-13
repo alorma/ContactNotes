@@ -4,7 +4,6 @@ import com.alorma.contactnotes.domain.contacts.Contact
 import com.alorma.contactnotes.domain.create.CreateUserForm
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
@@ -17,7 +16,7 @@ import io.reactivex.internal.subscriptions.DeferredScalarSubscription
 import org.reactivestreams.Subscriber
 import java.util.*
 
-class FirebaseStorageContactsDataSource(auth: FirebaseAuth, private val db: FirebaseFirestore) : ContactsDataSource {
+class FirebaseContactsDataSource(auth: FirebaseAuth, private val db: FirebaseFirestore) : ContactsDataSource {
     companion object {
         val CONTACTS_COLLECTION = "contacts"
         val CONTACT_DOCUMENT_ROW_NAME = "NAME"
@@ -76,7 +75,7 @@ class FirebaseStorageContactsDataSource(auth: FirebaseAuth, private val db: Fire
         return Completable.fromPublisher<Nothing> { subscriber ->
 
             if (currentUser != null) {
-                val document = buildCollection().document(UUID.randomUUID().toString())
+                val document = buildCollection().document()
                 val task = document
                         .set(buildMapForFirebase(createUserForm), SetOptions.merge())
                 runDocumentTask(task, subscriber)

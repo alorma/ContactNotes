@@ -7,7 +7,7 @@ import android.content.Context
 import android.support.v4.app.FragmentActivity
 import com.alorma.contactnotes.data.contacts.AndroidContactsDataSource
 import com.alorma.contactnotes.data.contacts.ContactsDataSource
-import com.alorma.contactnotes.data.contacts.FirebaseStorageContactsDataSource
+import com.alorma.contactnotes.data.contacts.FirebaseContactsDataSource
 import com.alorma.contactnotes.data.notes.FirebaseNotesDataSource
 import com.alorma.contactnotes.domain.contacts.ContactsRepository
 import com.alorma.contactnotes.domain.ListContactsWithNotesUseCase
@@ -39,8 +39,8 @@ open class Injector {
         return AndroidContactsDataSource(context.contentResolver)
     }
 
-    private fun provideContactsDataSource(): FirebaseStorageContactsDataSource {
-        return FirebaseStorageContactsDataSource(FirebaseAuth.getInstance(), provideFirebaseStorage())
+    private fun provideContactsDataSource(): FirebaseContactsDataSource {
+        return FirebaseContactsDataSource(FirebaseAuth.getInstance(), provideFirebaseStorage())
     }
 
     private fun provideFirebaseStorage(): FirebaseFirestore {

@@ -7,10 +7,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
 import com.alorma.contactnotes.R
+import com.alorma.contactnotes.ui.note.NoteActivity
 import kotlinx.android.synthetic.main.activity_notes.*
 
 class NotesActivity : AppCompatActivity() {
@@ -29,6 +29,7 @@ class NotesActivity : AppCompatActivity() {
 
     private lateinit var notesViewModel: ListNotesViewModel
     private lateinit var adapter: NotesAdapter
+    private val contactId by lazy { getContactId(intent) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,14 +41,17 @@ class NotesActivity : AppCompatActivity() {
 
         createAdapter()
         subscribe()
+    }
 
-        if (savedInstanceState == null) {
-            notesViewModel.load(getContactId(intent))
-        }
+    override fun onStart() {
+        super.onStart()
+        notesViewModel.load(getContactId(intent))
     }
 
     private fun createAdapter() {
-        adapter = NotesAdapter()
+        adapter = NotesAdapter {
+            openNote(it.id)
+        }
         val manager = GridLayoutManager(this, 2)
         recyclerNotes.layoutManager = manager
         recyclerNotes.adapter = adapter
@@ -67,8 +71,16 @@ class NotesActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             android.R.id.home -> finish()
-            R.id.menuActionAddNote -> notesViewModel.createNote()
+            R.id.menuActionAddNote -> createNote()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun createNote() {
+        startActivity(NoteActivity.createIntent(this, contactId))
+    }
+
+    private fun openNote(noteId: String) {
+        startActivity(NoteActivity.createIntent(this, contactId, noteId))
     }
 }

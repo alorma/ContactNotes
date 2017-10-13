@@ -49,11 +49,18 @@ class OverviewActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailed
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_overview)
+    }
 
+    override fun onStart() {
+        super.onStart()
+    }
+
+    override fun onResume() {
+        super.onResume()
         if (FirebaseAuth.getInstance().currentUser == null) {
             initNoLogged()
         } else {
-            initLogged(savedInstanceState)
+            initLogged()
         }
     }
 
@@ -73,7 +80,7 @@ class OverviewActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailed
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }
 
-    private fun initLogged(savedInstanceState: Bundle?) {
+    private fun initLogged() {
         loginButton.visibility = View.GONE
         recyclerOverview.visibility = VISIBLE
         contactsText.visibility = VISIBLE
@@ -85,9 +92,7 @@ class OverviewActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailed
 
         subscribe()
 
-        if (savedInstanceState == null) {
-            viewModel.loadContacts()
-        }
+        viewModel.loadContacts()
     }
 
     private fun setupAdapter() {
@@ -161,7 +166,7 @@ class OverviewActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailed
                 .addOnCompleteListener(this, { task ->
                     Answers.getInstance().logLogin(LoginEvent().putSuccess(task.isSuccessful).putMethod("google"))
                     if (task.isSuccessful) {
-                        initLogged(null)
+                        initLogged()
                     } else {
                         // If sign in fails, display a message to the user.
                         Toast.makeText(this@OverviewActivity, "Authentication failed.",

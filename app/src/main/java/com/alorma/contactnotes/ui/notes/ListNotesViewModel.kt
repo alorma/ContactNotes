@@ -5,34 +5,27 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import com.alorma.contactnotes.domain.GetNotesFromContactUseCase
 import com.alorma.contactnotes.domain.notes.Note
+import com.crashlytics.android.Crashlytics
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import java.util.*
 
 class ListNotesViewModel(private val getNotesUseCase: GetNotesFromContactUseCase) : ViewModel() {
 
-    private val items = mutableListOf<Note>()
-
-    private val addNoteLiveData = MutableLiveData<Boolean>()
     private val notesLiveData = MutableLiveData<List<Note>>()
 
     fun getData(): LiveData<List<Note>> = notesLiveData
 
+    private lateinit var contactId: String
+
     fun load(contactId: String) {
+        this.contactId = contactId
         getNotesUseCase.execute(contactId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    items.clear()
-                    items.addAll(it)
                     notesLiveData.postValue(it)
-                }, {})
+                }, {
+                    Crashlytics.getInstance().core.logException(it)
+                })
     }
-
-    fun createNote() {
-        items.add(Note(UUID.randomUUID().toString(), UUID.randomUUID().toString()))
-        addNoteLiveData.postValue(true)
-        notesLiveData.postValue(items)
-    }
-
 }

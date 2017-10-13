@@ -8,12 +8,12 @@ import com.alorma.contactnotes.R
 import com.alorma.contactnotes.domain.notes.Note
 import kotlinx.android.synthetic.main.note_row.view.*
 
-class NotesAdapter : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
+class NotesAdapter(private val callback: (Note) -> Unit) : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
 
     private val items = mutableListOf<Note>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(LayoutInflater.from(parent.context)
-            .inflate(R.layout.note_row, parent, false))
+            .inflate(R.layout.note_row, parent, false), callback)
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.populate(items[position])
 
@@ -35,9 +35,13 @@ class NotesAdapter : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
         notifyDataSetChanged()
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ViewHolder(itemView: View, private val callback: (Note) -> Unit) : RecyclerView.ViewHolder(itemView) {
         fun populate(note: Note) {
             itemView.note.text = note.text
+
+            itemView.setOnClickListener {
+                callback.invoke(note)
+            }
         }
     }
 }

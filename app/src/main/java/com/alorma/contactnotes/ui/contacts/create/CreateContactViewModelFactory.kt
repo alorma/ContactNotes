@@ -4,7 +4,7 @@ import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import android.content.ContentResolver
 import com.alorma.contactnotes.data.contacts.AndroidContactsDataSource
-import com.alorma.contactnotes.data.contacts.FirebaseStorageContactsDataSource
+import com.alorma.contactnotes.data.contacts.FirebaseContactsDataSource
 import com.alorma.contactnotes.domain.InsertContactUseCase
 import com.alorma.contactnotes.domain.LoadContactUseCase
 import com.alorma.contactnotes.domain.contacts.ContactsRepository
@@ -24,13 +24,13 @@ class CreateContactViewModelFactory(private val contentResolver: ContentResolver
         }
     }
 
-    private fun provideContactsDataSource(): FirebaseStorageContactsDataSource {
+    private fun provideContactsDataSource(): FirebaseContactsDataSource {
         val settings = FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(true)
                 .build()
         val db = FirebaseFirestore.getInstance()
         db.firestoreSettings = settings
-        return FirebaseStorageContactsDataSource(FirebaseAuth.getInstance(), db)
+        return FirebaseContactsDataSource(FirebaseAuth.getInstance(), db)
     }
 
     private fun createInsertContactUseCase(): InsertContactUseCase {
