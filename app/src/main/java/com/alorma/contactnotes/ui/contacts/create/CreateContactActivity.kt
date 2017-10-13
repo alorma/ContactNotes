@@ -1,5 +1,6 @@
 package com.alorma.contactnotes.ui.contacts.create
 
+import android.Manifest
 import android.app.Activity
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -15,6 +16,10 @@ import android.widget.Toast
 import com.alorma.contactnotes.R
 import com.crashlytics.android.answers.Answers
 import com.crashlytics.android.answers.CustomEvent
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.listener.PermissionDeniedResponse
+import com.karumi.dexter.listener.PermissionGrantedResponse
+import com.karumi.dexter.listener.single.BasePermissionListener
 import kotlinx.android.synthetic.main.create_contact_activity.*
 
 
@@ -55,9 +60,29 @@ class CreateContactActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             android.R.id.home -> returnCancel()
-            R.id.menuActionImportContact -> openContactPicker()
+            R.id.menuActionImportContact -> {
+                checkPermissions({
+                    openContactPicker()
+                })
+            }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun checkPermissions(function: () -> Unit) {
+        Dexter.withActivity(this)
+                .withPermission(Manifest.permission.READ_CONTACTS)
+                .withListener(object : BasePermissionListener() {
+                    override fun onPermissionGranted(response: PermissionGrantedResponse) {
+                        Answers.getInstance().logCustom(CustomEvent("Permission").putCustomAttribute("Contacts", "granted"))
+                        function()
+                    }
+
+                    override fun onPermissionDenied(response: PermissionDeniedResponse) {
+                        Answers.getInstance().logCustom(CustomEvent("Permission").putCustomAttribute("Contacts", "denied"))
+                        Toast.makeText(this@CreateContactActivity, "You should accept contacts permission", Toast.LENGTH_SHORT).show()
+                    }
+                }).check()
     }
 
     private fun openContactPicker() {
