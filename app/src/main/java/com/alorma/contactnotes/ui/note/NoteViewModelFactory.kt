@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import com.alorma.contactnotes.data.notes.FirebaseNotesDataSource
 import com.alorma.contactnotes.domain.InsertNoteUseCase
+import com.alorma.contactnotes.domain.LoadNoteUseCase
 import com.alorma.contactnotes.domain.UpdateNoteUseCase
 import com.alorma.contactnotes.domain.notes.NotesRepository
 import com.alorma.contactnotes.domain.validator.NotEmptyRule
@@ -15,10 +16,16 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings
 class NoteViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when (modelClass) {
-            NoteViewModel::class.java -> NoteViewModel(buildInsertNoteUseCase(),
-                    buildUpdateNoteUseCase(), buildNoteValidator()) as T
+            NoteViewModel::class.java -> NoteViewModel(buildLoadNoteUseCase(),
+                    buildInsertNoteUseCase(),
+                    buildUpdateNoteUseCase(),
+                    buildNoteValidator()) as T
             else -> throw IllegalArgumentException()
         }
+    }
+
+    private fun buildLoadNoteUseCase(): LoadNoteUseCase {
+        return LoadNoteUseCase(buildNotesRepository())
     }
 
     private fun buildInsertNoteUseCase(): InsertNoteUseCase {

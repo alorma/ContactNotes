@@ -9,6 +9,8 @@ class NotesRepository(private val remote: NotesDataSource) {
         return remote.getNotesByUser(userId)
     }
 
+    fun getNote(noteId: String) = remote.getNote(noteId)
+
     fun createNote(contactId: String): Single<String> {
         return remote.createNote(contactId)
     }

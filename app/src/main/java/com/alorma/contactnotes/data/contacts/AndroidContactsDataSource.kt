@@ -22,10 +22,6 @@ class AndroidContactsDataSource(private val contentResolver: ContentResolver) : 
         return Flowable.empty()
     }
 
-    override fun getContactByRawId(rawId: String): Maybe<Contact> {
-        return Maybe.never()
-    }
-
     override fun insertContact(createUserForm: CreateUserForm): Completable = Completable.never()
 
     override fun update(id: String, createUserForm: CreateUserForm): Completable = Completable.never()

@@ -49,6 +49,28 @@ class FirebaseNotesDataSource(auth: FirebaseAuth, private val db: FirebaseFirest
         it.sortedByDescending { it.date }
     }.toFlowable()
 
+
+    override fun getNote(noteId: String): Single<Note> = Single.fromPublisher<Note> { subscriber ->
+        val deferred: DeferredScalarSubscription<Note> = DeferredScalarSubscription(subscriber)
+        subscriber.onSubscribe(deferred)
+        if (currentUser != null) {
+            buildCollection().document(noteId)
+                    .get().addOnCompleteListener { task ->
+                parseDocumentTask(task, subscriber)
+                subscriber.onComplete()
+            }
+        } else {
+            subscriber.onError(Exception("Not logged"))
+        }
+    }
+
+    private fun parseDocumentTask(task: Task<DocumentSnapshot>, subscriber: Subscriber<in Note>) {
+        if (task.isSuccessful) {
+            subscriber.onNext(parseItem(task.result))
+            subscriber.onComplete()
+        }
+    }
+
     private fun parseTask(task: Task<QuerySnapshot>, subscriber: Subscriber<in Note>) {
         if (task.isSuccessful) {
             if (task.result != null) {

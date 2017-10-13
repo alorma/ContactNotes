@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import com.alorma.contactnotes.domain.InsertNoteUseCase
+import com.alorma.contactnotes.domain.LoadNoteUseCase
 import com.alorma.contactnotes.domain.UpdateNoteUseCase
 import com.alorma.contactnotes.domain.notes.Note
 import com.alorma.contactnotes.domain.validator.Validator
@@ -11,8 +12,10 @@ import com.crashlytics.android.Crashlytics
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-class NoteViewModel(private val insertNoteUseCase: InsertNoteUseCase,
-                    private val updateNoteUseCase: UpdateNoteUseCase, val noteValidator: Validator<String, String>) : ViewModel() {
+class NoteViewModel(private val loadNoteUseCase: LoadNoteUseCase,
+                    private val insertNoteUseCase: InsertNoteUseCase,
+                    private val updateNoteUseCase: UpdateNoteUseCase,
+                    private val noteValidator: Validator<String, String>) : ViewModel() {
 
     private val addNoteLiveData = MutableLiveData<String>()
     private val noteLiveData = MutableLiveData<Note>()
@@ -30,6 +33,15 @@ class NoteViewModel(private val insertNoteUseCase: InsertNoteUseCase,
     fun loadNote(noteId: String) {
         this.noteId = noteId
         newNote = false
+
+        loadNoteUseCase.execute(noteId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    noteLiveData.postValue(it)
+                }, {
+                    Crashlytics.getInstance().core.logException(it)
+                })
     }
 
     fun saveNote(contactId: String, text: String): LiveData<String> {

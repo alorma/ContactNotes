@@ -7,8 +7,6 @@ import io.reactivex.*
 interface ContactsDataSource {
     fun getContacts(): Flowable<List<Contact>>
 
-    fun getContactByRawId(rawId: String): Maybe<Contact>
-
     fun insertContact(createUserForm: CreateUserForm): Completable
 
     fun update(id: String, createUserForm: CreateUserForm): Completable

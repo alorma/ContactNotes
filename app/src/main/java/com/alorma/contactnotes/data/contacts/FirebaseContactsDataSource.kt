@@ -67,10 +67,6 @@ class FirebaseContactsDataSource(auth: FirebaseAuth, private val db: FirebaseFir
         return Contact(id, name, userEmail = email, userPhone = phone, lookup = lookup)
     }
 
-    override fun getContactByRawId(rawId: String): Maybe<Contact> {
-        return Maybe.empty()
-    }
-
     override fun insertContact(createUserForm: CreateUserForm): Completable {
         return Completable.fromPublisher<Nothing> { subscriber ->
 
