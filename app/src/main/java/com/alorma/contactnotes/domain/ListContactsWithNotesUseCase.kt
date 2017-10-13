@@ -1,13 +1,15 @@
 package com.alorma.contactnotes.domain
 
 import com.alorma.contactnotes.domain.contacts.Contact
+import com.alorma.contactnotes.domain.contacts.ContactRepository
 import com.alorma.contactnotes.domain.contacts.ContactsRepository
 import com.alorma.contactnotes.domain.notes.Note
 import com.alorma.contactnotes.domain.notes.NotesRepository
 import io.reactivex.Flowable
 
 class ListContactsWithNotesUseCase(private val contactsRepository: ContactsRepository,
-                                   private val notesRepository: NotesRepository) {
+                                   private val notesRepository: NotesRepository,
+                                   private val contactRepository: ContactRepository) {
 
     fun execute(): Flowable<List<Contact>> {
         return contactsRepository.getSavedContacts()
@@ -17,6 +19,7 @@ class ListContactsWithNotesUseCase(private val contactsRepository: ContactsRepos
     private fun iterateContacts(contacts: List<Contact>): Flowable<MutableList<Contact>> {
         return Flowable.fromIterable(contacts)
                 .flatMap(functionGetNotes(), functionCreateNewContactWithNotes())
+                .flatMap(functionGetPhoto(), functionGetContactPhoto())
                 .toList()
                 .toFlowable()
     }
@@ -34,5 +37,25 @@ class ListContactsWithNotesUseCase(private val contactsRepository: ContactsRepos
     private fun getContactWithNotes(contact: Contact): Flowable<List<Note>> {
         return notesRepository.getNotesFromUser(contact.id)
                 .defaultIfEmpty(listOf())
+    }
+
+    private fun functionGetPhoto(): (Contact) -> Flowable<String> {
+        return { contact ->
+            if (contact.lookup != null) {
+                getContactPhoto(contact.lookup)
+            } else {
+                Flowable.just("")
+            }
+        }
+    }
+
+    private fun functionGetContactPhoto(): (Contact, String) -> Contact {
+        return { contact, photo ->
+            contact.copy(photo = photo)
+        }
+    }
+
+    private fun getContactPhoto(lookupKey: String): Flowable<String> {
+        return contactRepository.getPhoto(lookupKey).defaultIfEmpty("")
     }
 }

@@ -10,6 +10,8 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import android.content.ContentUris
+
 
 class AndroidContactsDataSource(private val contentResolver: ContentResolver) : ContactsDataSource {
     companion object {
@@ -47,8 +49,9 @@ class AndroidContactsDataSource(private val contentResolver: ContentResolver) : 
 
                 val email: String? = loadEmail(id)
                 val phone: String? = loadPhone(id)
+                val photo: String? = loadPhoto(id)
 
-                Contact(id, name, lookup = lookup, userEmail = email, userPhone = phone)
+                Contact(id, name, lookup = lookup, userEmail = email, userPhone = phone, photo = photo)
             } else {
                 throw Exception()
             }
@@ -83,6 +86,12 @@ class AndroidContactsDataSource(private val contentResolver: ContentResolver) : 
         return phone
     }
 
+    private fun loadPhoto(id: String): String? {
+        val contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, id.toLong())
+        val photoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY)
+        return photoUri.toString()
+    }
+
     override fun getLookupKey(contactUri: String): Single<String> {
         return loadContact(contactUri).map { it.lookup }
     }
@@ -91,6 +100,15 @@ class AndroidContactsDataSource(private val contentResolver: ContentResolver) : 
         return Single.defer {
             val uri = Uri.parse("$LOOKUP_URI$lookup")
             loadContact(uri.toString())
+        }
+    }
+
+    override fun loadPhotoByLookup(lookup: String): Single<String> {
+        return Single.defer {
+            val uri = Uri.parse("$LOOKUP_URI$lookup")
+            loadContact(uri.toString())
+        }.map {
+            it.photo ?: ""
         }
     }
 }

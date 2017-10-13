@@ -16,4 +16,6 @@ interface ContactsDataSource {
     fun loadContactByLookup(lookup: String): Single<Contact>
 
     fun getLookupKey(contactUri: String): Single<String>
+
+    fun loadPhotoByLookup(lookup: String): Single<String>
 }

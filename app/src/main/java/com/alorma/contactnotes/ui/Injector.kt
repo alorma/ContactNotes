@@ -12,6 +12,7 @@ import com.alorma.contactnotes.data.notes.FirebaseNotesDataSource
 import com.alorma.contactnotes.domain.contacts.ContactsRepository
 import com.alorma.contactnotes.domain.ListContactsWithNotesUseCase
 import com.alorma.contactnotes.domain.ListExternalContactsUseCase
+import com.alorma.contactnotes.domain.contacts.ContactRepository
 import com.alorma.contactnotes.domain.notes.NotesRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -56,7 +57,11 @@ open class Injector {
     }
 
     private fun provideListContactsWithNotesUseCase(context: Context): ListContactsWithNotesUseCase {
-        return ListContactsWithNotesUseCase(provideContactsRepository(context), provideNotesRepository())
+        return ListContactsWithNotesUseCase(provideContactsRepository(context), provideNotesRepository(), provideContactRepository(context))
+    }
+
+    private fun provideContactRepository(context: Context): ContactRepository {
+        return ContactRepository(provideSystemContactsDataSource(context))
     }
 
     private fun provideNotesRepository(): NotesRepository {

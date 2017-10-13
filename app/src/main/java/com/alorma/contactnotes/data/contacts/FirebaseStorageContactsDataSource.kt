@@ -154,4 +154,8 @@ class FirebaseStorageContactsDataSource(auth: FirebaseAuth, private val db: Fire
     private fun buildContactDocument(lookup: String) =
             db.document("users/${currentUser?.uid}").collection(CONTACTS_COLLECTION)
                     .whereEqualTo(CONTACT_DOCUMENT_ROW_LOOKUP, lookup)
+
+    override fun loadPhotoByLookup(lookup: String): Single<String> {
+        return Single.never()
+    }
 }
