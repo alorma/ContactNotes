@@ -38,7 +38,11 @@ class ContactsOverviewAdapter(private val callback: (Contact) -> Unit) : Recycle
             val drawable = TextDrawable.builder().buildRound(char.toString(), generator.getColor(char))
             contactImage.setImageDrawable(drawable)
 
-            contact.photo?.let { contactImage.setImageURI(it) }
+            contact.photo?.let {
+                if (it.isNotEmpty()) {
+                    contactImage.setImageURI(it)
+                }
+            }
 
             contact.notes?.let {
                 if (it.isNotEmpty()) {
@@ -70,4 +74,5 @@ class ContactsOverviewAdapter(private val callback: (Contact) -> Unit) : Recycle
         notifyDataSetChanged()
     }
 }
+
 private operator fun String.get(intRange: IntRange): String = this.substring(intRange)

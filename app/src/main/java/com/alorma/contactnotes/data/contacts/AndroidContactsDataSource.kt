@@ -109,6 +109,6 @@ class AndroidContactsDataSource(private val contentResolver: ContentResolver) : 
             loadContact(uri.toString())
         }.map {
             it.photo ?: ""
-        }
+        }.onErrorReturn { "" }
     }
 }
