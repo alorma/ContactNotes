@@ -5,16 +5,21 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.support.v7.app.AppCompatActivity
+import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import com.alorma.contactnotes.R
 import kotlinx.android.synthetic.main.create_contact_activity.*
 
+
 class CreateContactActivity : AppCompatActivity() {
 
     companion object {
+        val REQ_CONTACT_DIRECTORY = 110
         fun createIntent(context: Context): Intent {
             return Intent(context, CreateContactActivity::class.java)
         }
@@ -30,7 +35,8 @@ class CreateContactActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        contactViewModel = ViewModelProviders.of(this, CreateContactViewModelFactory()).get(CreateContactViewModel::class.java)
+        val factory = CreateContactViewModelFactory(contentResolver)
+        contactViewModel = ViewModelProviders.of(this, factory).get(CreateContactViewModel::class.java)
 
         subscribe()
 
@@ -39,11 +45,23 @@ class CreateContactActivity : AppCompatActivity() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.create_contact, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             android.R.id.home -> returnCancel()
+            R.id.menuActionImportContact -> openContactPicker()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun openContactPicker() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = ContactsContract.Contacts.CONTENT_TYPE
+        startActivityForResult(intent, REQ_CONTACT_DIRECTORY)
     }
 
     private fun subscribe() {
@@ -89,4 +107,25 @@ class CreateContactActivity : AppCompatActivity() {
         contactViewModel.create(userName, userEmail, userPhone)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            REQ_CONTACT_DIRECTORY -> {
+                val uri = data?.data
+                onImportUserReceived(uri)
+            }
+        }
+    }
+
+    private fun onImportUserReceived(uri: Uri?) {
+        uri?.let {
+            contactViewModel.contactImported(it).observe(this, Observer {
+                it?.let {
+                    userEditText.editText?.setText(it.name)
+                    emailEditText.editText?.setText(it.userEmail)
+                    phoneEditText.editText?.setText(it.userPhone)
+                }
+            })
+        }
+    }
 }

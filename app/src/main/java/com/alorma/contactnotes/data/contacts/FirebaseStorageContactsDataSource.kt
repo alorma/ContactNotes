@@ -12,17 +12,18 @@ import com.google.firebase.firestore.SetOptions
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
+import io.reactivex.Single
 import io.reactivex.internal.subscriptions.DeferredScalarSubscription
 import org.reactivestreams.Subscriber
 import java.util.*
 
 class FirebaseStorageContactsDataSource(auth: FirebaseAuth, private val db: FirebaseFirestore) : ContactsDataSource {
-
     companion object {
         val CONTACTS_COLLECTION = "contacts"
         val CONTACT_DOCUMENT_ROW_NAME = "NAME"
         val CONTACT_DOCUMENT_ROW_EMAIL = "EMAIL"
         val CONTACT_DOCUMENT_ROW_PHONE = "PHONE"
+        val CONTACT_DOCUMENT_ROW_LOOKUP = "LOOKUP"
     }
 
     private val currentUser = auth.currentUser
@@ -82,6 +83,11 @@ class FirebaseStorageContactsDataSource(auth: FirebaseAuth, private val db: Fire
                             put(CONTACT_DOCUMENT_ROW_PHONE, it)
                         }
                     }
+                    createUserForm.lookup?.let {
+                        if (it.isNotEmpty()) {
+                            put(CONTACT_DOCUMENT_ROW_LOOKUP, normalizeLookup(it))
+                        }
+                    }
                 }
 
                 buildCollection(currentUser).document(UUID.randomUUID().toString())
@@ -98,6 +104,32 @@ class FirebaseStorageContactsDataSource(auth: FirebaseAuth, private val db: Fire
         }
     }
 
+    override fun loadContactByLookup(lookup: String): Single<Contact> {
+        return Single.fromPublisher({ subscriber ->
+            val deferred: DeferredScalarSubscription<Contact> = DeferredScalarSubscription(subscriber)
+            subscriber.onSubscribe(deferred)
+
+            if (currentUser != null) {
+                buildContactDocument(currentUser, normalizeLookup(lookup)).get().addOnCompleteListener { task ->
+                    parseTask(task, subscriber)
+                    subscriber.onComplete()
+                }
+            } else {
+                subscriber.onError(Exception("Not logged"))
+            }
+        })
+    }
+
+    private fun normalizeLookup(lookup: String) = lookup.split(".")[0]
+
+    override fun getLookupKey(contactUri: String): Single<String> {
+        return Single.never()
+    }
+
     private fun buildCollection(currentUser: FirebaseUser) =
             db.document("users/${currentUser.uid}").collection(CONTACTS_COLLECTION)
+
+    private fun buildContactDocument(currentUser: FirebaseUser, lookup: String) =
+            db.document("users/${currentUser.uid}").collection(CONTACTS_COLLECTION)
+                    .whereEqualTo(CONTACT_DOCUMENT_ROW_LOOKUP, lookup)
 }

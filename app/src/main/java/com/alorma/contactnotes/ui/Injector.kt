@@ -30,12 +30,12 @@ open class Injector {
         )
     }
 
-    private fun provideContactsRepository(): ContactsRepository {
-        return ContactsRepository(provideSystemContactsDataSource(), provideContactsDataSource())
+    private fun provideContactsRepository(context: Context): ContactsRepository {
+        return ContactsRepository(provideSystemContactsDataSource(context), provideContactsDataSource())
     }
 
-    private fun provideSystemContactsDataSource(): ContactsDataSource {
-        return AndroidContactsDataSource()
+    private fun provideSystemContactsDataSource(context: Context): ContactsDataSource {
+        return AndroidContactsDataSource(context.contentResolver)
     }
 
     private fun provideContactsDataSource(): FirebaseStorageContactsDataSource {
@@ -52,11 +52,11 @@ open class Injector {
     }
 
     private fun provideListExternalContactsUseCase(context: Context): ListExternalContactsUseCase {
-        return ListExternalContactsUseCase(provideContactsRepository())
+        return ListExternalContactsUseCase(provideContactsRepository(context))
     }
 
     private fun provideListContactsWithNotesUseCase(context: Context): ListContactsWithNotesUseCase {
-        return ListContactsWithNotesUseCase(provideContactsRepository(), provideNotesRepository())
+        return ListContactsWithNotesUseCase(provideContactsRepository(context), provideNotesRepository())
     }
 
     private fun provideNotesRepository(): NotesRepository {

@@ -5,6 +5,7 @@ import com.alorma.contactnotes.domain.create.CreateUserForm
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
+import io.reactivex.Single
 
 class ContactsRepository(private val system: ContactsDataSource, private val remote: ContactsDataSource) {
     fun getContacts(): Flowable<List<Contact>> {
@@ -16,6 +17,21 @@ class ContactsRepository(private val system: ContactsDataSource, private val rem
     }
 
     fun insert(createUserForm: CreateUserForm): Completable {
-        return remote.insertContact(createUserForm)
+        return if (createUserForm.lookup != null) {
+            remote.loadContactByLookup(createUserForm.lookup).flatMapCompletable { Completable.complete() }
+                    .onErrorResumeNext {
+                        when (it) {
+                            is NoSuchElementException -> remote.insertContact(createUserForm)
+                            else -> Completable.error(it)
+                        }
+                    }
+
+        } else {
+            remote.insertContact(createUserForm)
+        }
+    }
+
+    fun loadContact(contactUri: String): Single<Contact> {
+        return system.getLookupKey(contactUri).flatMap { system.loadContactByLookup(it) }
     }
 }
