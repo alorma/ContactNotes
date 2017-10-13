@@ -11,6 +11,11 @@ import com.alorma.contactnotes.domain.contacts.Contact
 import com.alorma.contactnotes.setImageURI
 import com.amulyakhare.textdrawable.TextDrawable
 import com.amulyakhare.textdrawable.util.ColorGenerator
+import com.bumptech.glide.Glide
+import com.bumptech.glide.Priority
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import com.bumptech.glide.request.RequestOptions
+
 
 class ContactsOverviewAdapter(private val callback: (Contact) -> Unit) : RecyclerView.Adapter<ContactsOverviewAdapter.ViewHolder>() {
 
@@ -33,10 +38,20 @@ class ContactsOverviewAdapter(private val callback: (Contact) -> Unit) : Recycle
         fun populate(contact: Contact) {
             contactName.text = contact.name
 
-            val char = contact.name[0]
-            val generator = ColorGenerator.MATERIAL
-            val drawable = TextDrawable.builder().buildRound(char.toString(), generator.getColor(char))
-            contactImage.setImageDrawable(drawable)
+            val drawable = getContactDefaultDrawable(contact)
+
+            val options = RequestOptions()
+                    .centerCrop()
+                    .error(drawable)
+                    .placeholder(drawable)
+                    .fallback(drawable)
+                    .priority(Priority.HIGH)
+                    .transforms(CircleCrop())
+
+            Glide.with(contactImage)
+                    .load(contact.photo)
+                    .apply(options)
+                    .into(contactImage)
 
             contact.photo?.let {
                 if (it.isNotEmpty()) {
@@ -61,6 +76,12 @@ class ContactsOverviewAdapter(private val callback: (Contact) -> Unit) : Recycle
             itemView.setOnClickListener {
                 callback.invoke(contact)
             }
+        }
+
+        private fun getContactDefaultDrawable(contact: Contact): TextDrawable {
+            val char = contact.name[0]
+            val generator = ColorGenerator.MATERIAL
+            return TextDrawable.builder().buildRound(char.toString(), generator.getColor(char))
         }
     }
 
