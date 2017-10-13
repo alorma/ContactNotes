@@ -13,6 +13,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import com.alorma.contactnotes.R
+import com.crashlytics.android.answers.Answers
+import com.crashlytics.android.answers.CustomEvent
 import kotlinx.android.synthetic.main.create_contact_activity.*
 
 
@@ -111,8 +113,16 @@ class CreateContactActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQ_CONTACT_DIRECTORY -> {
-                val uri = data?.data
-                onImportUserReceived(uri)
+                when (resultCode) {
+                    Activity.RESULT_OK -> {
+                        val uri = data?.data
+                        onImportUserReceived(uri)
+                        Answers.getInstance().logCustom(CustomEvent("Pick").putCustomAttribute("RESULT", "OK"))
+                    }
+                    else -> {
+                        Answers.getInstance().logCustom(CustomEvent("Pick").putCustomAttribute("RESULT", "KO"))
+                    }
+                }
             }
         }
     }

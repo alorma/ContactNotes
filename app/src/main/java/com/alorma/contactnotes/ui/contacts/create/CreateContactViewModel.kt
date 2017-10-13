@@ -9,6 +9,7 @@ import com.alorma.contactnotes.domain.LoadContactUseCase
 import com.alorma.contactnotes.domain.contacts.Contact
 import com.alorma.contactnotes.domain.create.CreateUserForm
 import com.alorma.contactnotes.domain.validator.Validator
+import com.crashlytics.android.Crashlytics
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
@@ -38,6 +39,7 @@ class CreateContactViewModel(private val usernameValidator: Validator<String, St
                     .subscribe({
                         resultLiveData.postValue(true)
                     }, {
+                        Crashlytics.getInstance().core.logException(it)
                         resultLiveData.postValue(false)
                     })
         }
@@ -49,7 +51,9 @@ class CreateContactViewModel(private val usernameValidator: Validator<String, St
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     onContactLoaded(it)
-                }, {})
+                }, {
+                    Crashlytics.getInstance().core.logException(it)
+                })
         return importContact
     }
 

@@ -3,6 +3,7 @@
           package="com.alorma.contactnotes">
 
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".NotesApplication"
@@ -22,6 +23,16 @@
         <activity android:name=".ui.contacts.pick.ContactsActivity"/>
         <activity android:name=".ui.notes.NotesActivity"/>
         <activity android:name=".ui.contacts.create.CreateContactActivity"/>
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="e331bb7b7ec0167c4cfcc3b095a54a718802f080" />
+
+        <provider
+            android:authorities="${applicationId}"
+            android:name=".SDKsProvider"
+            android:exported="false"/>
+
     </application>
 
 </manifest>

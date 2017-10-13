@@ -12,6 +12,8 @@ import com.alorma.contactnotes.R
 import com.alorma.contactnotes.domain.contacts.Contact
 import com.alorma.contactnotes.ui.contacts.create.CreateContactActivity
 import com.alorma.contactnotes.ui.notes.NotesActivity
+import com.crashlytics.android.answers.Answers
+import com.crashlytics.android.answers.LoginEvent
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -157,6 +159,7 @@ class OverviewActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailed
         val credential = GoogleAuthProvider.getCredential(account?.idToken, null)
         FirebaseAuth.getInstance().signInWithCredential(credential)
                 .addOnCompleteListener(this, { task ->
+                    Answers.getInstance().logLogin(LoginEvent().putSuccess(task.isSuccessful).putMethod("google"))
                     if (task.isSuccessful) {
                         initLogged(null)
                     } else {
