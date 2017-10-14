@@ -16,7 +16,6 @@ import com.bumptech.glide.Priority
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.request.RequestOptions
 
-
 class ContactsOverviewAdapter(private val callback: (Contact) -> Unit) : RecyclerView.Adapter<ContactsOverviewAdapter.ViewHolder>() {
 
     private val items = mutableListOf<Contact>()

@@ -1,6 +1,7 @@
 package com.alorma.contactnotes.ui.overview
 
 import android.app.Activity
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -88,7 +89,7 @@ class OverviewActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailed
 
         setupFAB()
         setupAdapter()
-        viewModel = OverviewInjector.provideOverviewViewModel(this)
+        viewModel = ViewModelProviders.of(this, OverViewModelFactory(this)).get(OverviewViewModel::class.java)
 
         subscribe()
 

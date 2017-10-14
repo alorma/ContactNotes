@@ -25,7 +25,7 @@ class NotesRepository(private val remote: NotesDataSource) {
         remote.createNote(contactId, text)
     }
 
-    fun updateNote(contactId: String, noteId: String, text: String): Single<String> {
-        return remote.updateNote(contactId, noteId, text)
+    fun updateNote(contactId: String, noteId: String, text: String) {
+        remote.updateNote(contactId, noteId, text)
     }
 }
