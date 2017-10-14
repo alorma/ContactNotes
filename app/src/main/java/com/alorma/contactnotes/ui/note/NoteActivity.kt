@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
+import android.widget.Toast
 import com.alorma.contactnotes.R
 import kotlinx.android.synthetic.main.activity_note_editor.*
 
@@ -58,6 +59,9 @@ class NoteActivity : AppCompatActivity() {
             it?.let {
                 noteContent.setText(it.text)
             }
+        })
+        noteViewModel.getError().observe(this, Observer {
+            Toast.makeText(this@NoteActivity, "Error", Toast.LENGTH_SHORT).show()
         })
     }
 

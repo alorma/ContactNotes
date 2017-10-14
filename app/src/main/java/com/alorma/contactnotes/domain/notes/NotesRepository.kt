@@ -6,17 +6,23 @@ import io.reactivex.Single
 
 class NotesRepository(private val remote: NotesDataSource) {
     fun getNotesFromUser(userId: String): Flowable<List<Note>> {
-        return remote.getNotesByUser(userId)
+        return remote.getNotesFromUser(userId)
     }
 
-    fun getNote(noteId: String) = remote.getNote(noteId)
-
-    fun createNote(contactId: String): Single<String> {
-        return remote.createNote(contactId)
+    fun getNotesByUser(userId: String) {
+        remote.getNotesByUser(userId)
     }
 
-    fun createNote(contactId: String, text: String): Single<String> {
-        return remote.createNote(contactId, text)
+    fun getNote(noteId: String) {
+        remote.getNote(noteId)
+    }
+
+    fun createNote(contactId: String) {
+        remote.createNote(contactId)
+    }
+
+    fun createNote(contactId: String, text: String) {
+        remote.createNote(contactId, text)
     }
 
     fun updateNote(contactId: String, noteId: String, text: String): Single<String> {

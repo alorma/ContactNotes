@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import com.alorma.contactnotes.R
 import com.alorma.contactnotes.ui.note.NoteActivity
 import kotlinx.android.synthetic.main.activity_notes.*
@@ -60,6 +61,9 @@ class NotesActivity : AppCompatActivity() {
     private fun subscribe() {
         notesViewModel.getData().observe(this, Observer {
             it?.let { adapter.updateList(it) }
+        })
+        notesViewModel.getError().observe(this, Observer {
+            Toast.makeText(this@NotesActivity, "Error", Toast.LENGTH_SHORT).show()
         })
     }
 

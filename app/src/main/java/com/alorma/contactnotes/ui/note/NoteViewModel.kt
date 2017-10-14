@@ -1,26 +1,23 @@
 package com.alorma.contactnotes.ui.note
 
 import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import com.alorma.contactnotes.data.notes.ErrorNotesLiveData
+import com.alorma.contactnotes.data.notes.InsertNoteLiveData
+import com.alorma.contactnotes.data.notes.SingleNoteLiveData
 import com.alorma.contactnotes.domain.InsertNoteUseCase
 import com.alorma.contactnotes.domain.LoadNoteUseCase
 import com.alorma.contactnotes.domain.UpdateNoteUseCase
 import com.alorma.contactnotes.domain.notes.Note
 import com.alorma.contactnotes.domain.validator.Validator
-import com.crashlytics.android.Crashlytics
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 
 class NoteViewModel(private val loadNoteUseCase: LoadNoteUseCase,
                     private val insertNoteUseCase: InsertNoteUseCase,
                     private val updateNoteUseCase: UpdateNoteUseCase,
                     private val noteValidator: Validator<String, String>) : ViewModel() {
 
-    private val addNoteLiveData = MutableLiveData<String>()
-    private val noteLiveData = MutableLiveData<Note>()
-
-    fun getData(): LiveData<Note> = noteLiveData
+    fun getData(): LiveData<Note> = SingleNoteLiveData.INSTANCE
+    fun getError(): LiveData<Exception> = ErrorNotesLiveData.INSTANCE
 
     private var newNote = false
 
@@ -35,13 +32,6 @@ class NoteViewModel(private val loadNoteUseCase: LoadNoteUseCase,
         newNote = false
 
         loadNoteUseCase.execute(noteId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    noteLiveData.postValue(it)
-                }, {
-                    Crashlytics.getInstance().core.logException(it)
-                })
     }
 
     fun saveNote(contactId: String, text: String): LiveData<String> {
@@ -50,14 +40,8 @@ class NoteViewModel(private val loadNoteUseCase: LoadNoteUseCase,
                 insertNoteUseCase.execute(contactId, text)
             } else {
                 updateNoteUseCase.execute(contactId, noteId, text)
-            }.subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({
-                        addNoteLiveData.postValue(it)
-                    }, {
-                        Crashlytics.getInstance().core.logException(it)
-                    })
+            }
         }
-        return addNoteLiveData
+        return InsertNoteLiveData.INSTANCE
     }
 }
