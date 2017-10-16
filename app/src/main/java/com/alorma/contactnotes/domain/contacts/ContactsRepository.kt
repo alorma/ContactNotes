@@ -7,11 +7,7 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 
 class ContactsRepository(private val system: ContactsDataSource, private val remote: ContactsDataSource) {
-    fun getContacts(): Flowable<List<Contact>> {
-        return system.getContacts()
-    }
-
-    fun getSavedContacts(): Flowable<List<Contact>> {
+    fun getSavedContacts() {
         return remote.getContacts()
     }
 

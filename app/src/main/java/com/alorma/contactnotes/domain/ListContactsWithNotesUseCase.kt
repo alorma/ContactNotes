@@ -1,61 +1,10 @@
 package com.alorma.contactnotes.domain
 
-import com.alorma.contactnotes.domain.contacts.Contact
-import com.alorma.contactnotes.domain.contacts.ContactRepository
 import com.alorma.contactnotes.domain.contacts.ContactsRepository
-import com.alorma.contactnotes.domain.notes.Note
-import com.alorma.contactnotes.domain.notes.NotesRepository
-import io.reactivex.Flowable
 
-class ListContactsWithNotesUseCase(private val contactsRepository: ContactsRepository,
-                                   private val notesRepository: NotesRepository,
-                                   private val contactRepository: ContactRepository) {
+class ListContactsWithNotesUseCase(private val contactsRepository: ContactsRepository) {
 
-    fun execute(): Flowable<List<Contact>> {
+    fun execute() {
         return contactsRepository.getSavedContacts()
-                .flatMap({ iterateContacts(it) })
-    }
-
-    private fun iterateContacts(contacts: List<Contact>): Flowable<MutableList<Contact>> {
-        return Flowable.fromIterable(contacts)
-                .flatMap(functionGetNotes(), functionCreateNewContactWithNotes())
-                .flatMap(functionGetPhoto(), functionGetContactPhoto())
-                .toList()
-                .toFlowable()
-    }
-
-    private fun functionGetNotes(): (Contact) -> Flowable<List<Note>> {
-        return { contact -> getContactWithNotes(contact) }
-    }
-
-    private fun functionCreateNewContactWithNotes(): (Contact, List<Note>) -> Contact {
-        return { contact, notes ->
-            contact.copy(notes = notes)
-        }
-    }
-
-    private fun getContactWithNotes(contact: Contact): Flowable<List<Note>> {
-        return notesRepository.getNotesFromUser(contact.id)
-                .defaultIfEmpty(listOf())
-    }
-
-    private fun functionGetPhoto(): (Contact) -> Flowable<String> {
-        return { contact ->
-            if (contact.lookup != null) {
-                getContactPhoto(contact.lookup)
-            } else {
-                Flowable.just("")
-            }
-        }
-    }
-
-    private fun functionGetContactPhoto(): (Contact, String) -> Contact {
-        return { contact, photo ->
-            contact.copy(photo = photo)
-        }
-    }
-
-    private fun getContactPhoto(lookupKey: String): Flowable<String> {
-        return contactRepository.getPhoto(lookupKey).defaultIfEmpty("")
     }
 }

@@ -5,7 +5,7 @@ import com.alorma.contactnotes.domain.create.CreateUserForm
 import io.reactivex.*
 
 interface ContactsDataSource {
-    fun getContacts(): Flowable<List<Contact>>
+    fun getContacts()
 
     fun insertContact(createUserForm: CreateUserForm): Completable
 

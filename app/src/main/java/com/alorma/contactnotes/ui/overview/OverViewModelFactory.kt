@@ -28,7 +28,7 @@ class OverViewModelFactory(private val context: Context) : ViewModelProvider.Fac
     }
 
     private fun provideListContactsWithNotesUseCase(context: Context): ListContactsWithNotesUseCase {
-        return ListContactsWithNotesUseCase(provideContactsRepository(context), provideNotesRepository(), provideContactRepository(context))
+        return ListContactsWithNotesUseCase(provideContactsRepository(context))
     }
 
     private fun provideContactRepository(context: Context): ContactRepository {

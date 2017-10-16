@@ -18,8 +18,8 @@ class AndroidContactsDataSource(private val contentResolver: ContentResolver) : 
         val LOOKUP_URI = "content://com.android.contacts/contacts/lookup/"
     }
 
-    override fun getContacts(): Flowable<List<Contact>> {
-        return Flowable.empty()
+    override fun getContacts() {
+
     }
 
     override fun insertContact(createUserForm: CreateUserForm): Completable = Completable.never()

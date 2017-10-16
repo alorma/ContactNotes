@@ -84,13 +84,24 @@ class ContactsOverviewAdapter(private val callback: (Contact) -> Unit) : Recycle
         }
     }
 
-    fun addItems(contacts: Collection<Contact>) {
+    fun addItems(contacts: List<Contact>) {
         items.addAll(contacts)
         notifyDataSetChanged()
     }
 
     fun clear() {
         items.clear()
+        notifyDataSetChanged()
+    }
+
+    fun addItem(contact: Contact) {
+        addItems(listOf(contact))
+        notifyDataSetChanged()
+    }
+
+    fun updateItems(contacts: List<Contact>) {
+        items.clear()
+        items.addAll(contacts)
         notifyDataSetChanged()
     }
 }

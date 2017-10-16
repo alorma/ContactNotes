@@ -1,16 +1,14 @@
 package com.alorma.contactnotes.data.contacts
 
+import com.alorma.contactnotes.data.notes.FirebaseNotesDataSource
 import com.alorma.contactnotes.domain.contacts.Contact
 import com.alorma.contactnotes.domain.create.CreateUserForm
+import com.alorma.contactnotes.domain.notes.Note
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.internal.subscriptions.DeferredScalarSubscription
 import org.reactivestreams.Subscriber
@@ -23,48 +21,72 @@ class FirebaseContactsDataSource(auth: FirebaseAuth, private val db: FirebaseFir
         val CONTACT_DOCUMENT_ROW_EMAIL = "EMAIL"
         val CONTACT_DOCUMENT_ROW_PHONE = "PHONE"
         val CONTACT_DOCUMENT_ROW_LOOKUP = "LOOKUP"
+        val CONTACT_DOCUMENT_ROW_NOTE_REF = "NOTE_REF"
     }
 
     private val currentUser = auth.currentUser
 
-    override fun getContacts(): Flowable<List<Contact>> = Flowable.fromPublisher<Contact> { subscriber ->
-        val deferred: DeferredScalarSubscription<Contact> = DeferredScalarSubscription(subscriber)
-        subscriber.onSubscribe(deferred)
+    override fun getContacts() {
         if (currentUser != null) {
             buildCollection().get().addOnCompleteListener { task ->
-                parseTask(task, subscriber)
-                subscriber.onComplete()
+                parseTask(task)
             }.addOnFailureListener {
-                subscriber.onError(it)
+                ErrorContactLiveData.INSTANCE.postValue(it)
             }
         } else {
-            subscriber.onError(Exception("Not logged"))
+            ErrorContactLiveData.INSTANCE.postValue(Exception("Not logged"))
         }
-    }.toList().toFlowable()
+    }
 
-    private fun parseTask(task: Task<QuerySnapshot>, subscriber: Subscriber<in Contact>) {
+    private fun parseTask(task: Task<QuerySnapshot>) {
         if (task.isSuccessful) {
             if (task.result != null) {
-                parseTaskResult(task, subscriber)
+                parseTaskResult(task)
             }
         } else {
-            subscriber.onError(Exception(task.exception))
+            ErrorContactLiveData.INSTANCE.postValue(task.exception)
         }
     }
 
-    private fun parseTaskResult(task: Task<QuerySnapshot>, subscriber: Subscriber<in Contact>) {
+    private fun parseTaskResult(task: Task<QuerySnapshot>) {
         task.result.forEach {
-            subscriber.onNext(parseItem(it))
+            parseItem(it)
         }
     }
 
-    private fun parseItem(contactDocument: DocumentSnapshot): Contact {
+    private fun parseItem(contactDocument: DocumentSnapshot) {
         val id = contactDocument.id
         val name = contactDocument.data[CONTACT_DOCUMENT_ROW_NAME] as String
         val email = contactDocument.data[CONTACT_DOCUMENT_ROW_EMAIL]?.let { it as String }
         val phone = contactDocument.data[CONTACT_DOCUMENT_ROW_PHONE]?.let { it as String }
         val lookup = contactDocument.data[CONTACT_DOCUMENT_ROW_LOOKUP]?.let { it as String }
-        return Contact(id, name, userEmail = email, userPhone = phone, lookup = lookup)
+        val noteRef = contactDocument.data[CONTACT_DOCUMENT_ROW_NOTE_REF]?.let { it as DocumentReference }
+
+        val contact = Contact(id, name, userEmail = email, userPhone = phone, lookup = lookup)
+
+        if (noteRef == null) {
+            ContactLiveData.INSTANCE.postValue(contact)
+        } else {
+            noteRef.get().addOnCompleteListener {
+                if (it.isSuccessful) {
+                    if (it.result != null) {
+                        val note = parseNoteItem(it.result)
+                        ContactLiveData.INSTANCE.value = contact.copy(notes = listOf(note))
+                    }
+                } else {
+                    ContactLiveData.INSTANCE.value = contact
+                }
+            }.addOnFailureListener {
+                ContactLiveData.INSTANCE.value = contact
+            }
+        }
+    }
+
+    private fun parseNoteItem(noteDocument: DocumentSnapshot): Note {
+        val id = noteDocument.id
+        val text = noteDocument.data[FirebaseNotesDataSource.NOTE_DOCUMENT_ROW_TEXT]?.let { it as String } ?: ""
+        val date = noteDocument.data[FirebaseNotesDataSource.NOTE_DOCUMENT_ROW_DATE] as Long
+        return Note(id, text, Date(date))
     }
 
     override fun insertContact(createUserForm: CreateUserForm): Completable {
@@ -128,7 +150,7 @@ class FirebaseContactsDataSource(auth: FirebaseAuth, private val db: FirebaseFir
 
             if (currentUser != null) {
                 buildContactDocument(normalizeLookup(lookup)).get().addOnCompleteListener { task ->
-                    parseTask(task, subscriber)
+                    parseTask(task)
                     subscriber.onComplete()
                 }
             } else {

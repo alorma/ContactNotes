@@ -1,6 +1,7 @@
 package com.alorma.contactnotes.ui.overview
 
 import android.app.Activity
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
@@ -33,7 +34,11 @@ class OverviewActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailed
     }
 
     private lateinit var viewModel: OverviewViewModel
-    private lateinit var contactsAdapter: ContactsOverviewAdapter
+    private val contactsAdapter: ContactsOverviewAdapter by lazy {
+        ContactsOverviewAdapter({
+            startActivity(NotesActivity.newInstance(this@OverviewActivity, it.id))
+        })
+    }
 
     private val mGoogleApiClient: GoogleApiClient by lazy {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -52,12 +57,9 @@ class OverviewActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailed
         setContentView(R.layout.activity_overview)
     }
 
-    override fun onStart() {
-        super.onStart()
-    }
-
     override fun onResume() {
         super.onResume()
+
         if (FirebaseAuth.getInstance().currentUser == null) {
             initNoLogged()
         } else {
@@ -89,18 +91,14 @@ class OverviewActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailed
 
         setupFAB()
         setupAdapter()
+
         viewModel = ViewModelProviders.of(this, OverViewModelFactory(this)).get(OverviewViewModel::class.java)
-
         subscribe()
-
         viewModel.loadContacts()
     }
 
     private fun setupAdapter() {
         recyclerOverview.layoutManager = GridLayoutManager(this, 2)
-        contactsAdapter = ContactsOverviewAdapter({
-            startActivity(NotesActivity.newInstance(this@OverviewActivity, it.id))
-        })
         recyclerOverview.adapter = contactsAdapter
     }
 
@@ -115,22 +113,18 @@ class OverviewActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailed
     }
 
     private fun subscribe() {
-        viewModel.getContacts().subscribe(this, {
-            if (it.isEmpty()) {
-                onContactsEmpty()
-            } else {
-                onContactLoaded(it)
-            }
-        }, {
-            it.printStackTrace()
-        })
-    }
+        viewModel.getContacts().observe(this, Observer {
+            it?.let {
+                contactsAdapter.updateItems(it)
 
-    private fun onContactLoaded(list: List<Contact>) {
-        recyclerOverview.visibility = VISIBLE
-        contactsText.visibility = GONE
-        contactsAdapter.clear()
-        contactsAdapter.addItems(list)
+                if (contactsAdapter.itemCount == 0) {
+                    onContactsEmpty()
+                } else {
+                    recyclerOverview.visibility = VISIBLE
+                    contactsText.visibility = GONE
+                }
+            }
+        })
     }
 
     private fun onContactsEmpty() {
