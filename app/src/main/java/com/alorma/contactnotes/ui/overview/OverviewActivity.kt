@@ -100,6 +100,7 @@ class OverviewActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailed
     private fun setupAdapter() {
         recyclerOverview.layoutManager = GridLayoutManager(this, 2)
         recyclerOverview.adapter = contactsAdapter
+        contactsAdapter.clear()
     }
 
     private fun setupFAB() {
@@ -115,7 +116,7 @@ class OverviewActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailed
     private fun subscribe() {
         viewModel.getContacts().observe(this, Observer {
             it?.let {
-                contactsAdapter.updateItems(it)
+                contactsAdapter.addItem(it)
 
                 if (contactsAdapter.itemCount == 0) {
                     onContactsEmpty()

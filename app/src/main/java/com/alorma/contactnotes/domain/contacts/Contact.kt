@@ -3,6 +3,7 @@ package com.alorma.contactnotes.domain.contacts
 import com.alorma.contactnotes.domain.notes.Note
 
 data class Contact(val id: String,
+                   val androidId: String? = null,
                    val name: String,
                    val userEmail: String? = null,
                    val userPhone: String? = null,

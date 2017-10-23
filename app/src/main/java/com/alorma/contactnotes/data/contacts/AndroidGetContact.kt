@@ -5,24 +5,15 @@ import android.content.ContentUris
 import android.net.Uri
 import android.provider.ContactsContract
 import com.alorma.contactnotes.domain.contacts.Contact
-import com.alorma.contactnotes.domain.create.CreateUserForm
-import io.reactivex.Completable
 
-
-class AndroidContactsDataSource(private val contentResolver: ContentResolver) : ContactsDataSource {
-
-    override fun getContacts() {
+class AndroidGetContact(private val contentResolver: ContentResolver) : GetContact {
+    override fun get(userId: String): Contact? {
 
     }
 
-    override fun insertContact(createUserForm: CreateUserForm) {
-
-    }
-
-    override fun update(id: String, createUserForm: CreateUserForm): Completable = Completable.never()
-
-    override fun loadContact(contactUri: String) {
-        val cursor = contentResolver.query(Uri.parse(contactUri), null, null, null, null)
+    fun loadContact(contactUri: String): Contact {
+        val cursor = contentResolver.query(Uri.parse(contactUri), null,
+                null, null, null)
 
         if (cursor.moveToFirst()) {
             val idIndex = cursor.getColumnIndex(ContactsContract.Contacts._ID)
@@ -39,8 +30,7 @@ class AndroidContactsDataSource(private val contentResolver: ContentResolver) : 
             val phone: String? = loadPhone(id)
             val photo: String? = loadPhoto(id)
 
-            val contact = Contact(id, name = name, lookup = lookup, userEmail = email, userPhone = phone, photo = photo)
-            ContactsListProvider.INSTANCE.value = contact
+            return Contact(id, name = name, lookup = lookup, userEmail = email, userPhone = phone, photo = photo)
         } else {
             throw Exception()
         }

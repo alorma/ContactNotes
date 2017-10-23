@@ -101,19 +101,6 @@ class CreateContactActivity : AppCompatActivity() {
         contactViewModel.getPhoneValidationError().observe(this, Observer {
             phoneEditText.error = it
         })
-
-        contactViewModel.getResult().observe(this, Observer {
-            it?.let {
-                if (it) {
-                    userEditText.error = null
-                    emailEditText.error = null
-                    phoneEditText.error = null
-                    returnSuccess()
-                } else {
-                    Toast.makeText(this@CreateContactActivity, "Error creating", Toast.LENGTH_SHORT).show()
-                }
-            }
-        })
     }
 
     private fun returnSuccess() {
@@ -131,7 +118,18 @@ class CreateContactActivity : AppCompatActivity() {
         val userEmail = emailEditText.editText?.text.toString()
         val userPhone = phoneEditText.editText?.text.toString()
 
-        contactViewModel.create(userName, userEmail, userPhone)
+        contactViewModel.create(userName, userEmail, userPhone).observe(this, Observer {
+            it?.let {
+                if (it) {
+                    userEditText.error = null
+                    emailEditText.error = null
+                    phoneEditText.error = null
+                    returnSuccess()
+                } else {
+                    Toast.makeText(this@CreateContactActivity, "Error creating", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

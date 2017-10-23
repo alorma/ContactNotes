@@ -2,18 +2,14 @@ package com.alorma.contactnotes.data.contacts
 
 import com.alorma.contactnotes.domain.contacts.Contact
 import com.alorma.contactnotes.domain.create.CreateUserForm
-import io.reactivex.*
+import io.reactivex.Completable
 
 interface ContactsDataSource {
     fun getContacts()
 
-    fun insertContact(createUserForm: CreateUserForm): Completable
+    fun insertContact(createUserForm: CreateUserForm): Contact
 
     fun update(id: String, createUserForm: CreateUserForm): Completable
 
-    fun loadContactByLookup(lookup: String): Single<Contact>
-
-    fun getLookupKey(contactUri: String): Single<String>
-
-    fun loadPhotoByLookup(lookup: String): Single<String>
+    fun loadContact(contactUri: String)
 }
