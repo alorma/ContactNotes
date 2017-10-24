@@ -14,6 +14,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import com.alorma.contactnotes.R
+import com.alorma.contactnotes.domain.contacts.Contact
 import com.crashlytics.android.answers.Answers
 import com.crashlytics.android.answers.CustomEvent
 import com.karumi.dexter.Dexter
@@ -152,13 +153,15 @@ class CreateContactActivity : AppCompatActivity() {
 
     private fun onImportUserReceived(uri: Uri?) {
         uri?.let {
-            contactViewModel.contactImported(it).observe(this, Observer {
+            val contactImported = contactViewModel.contactImported(it)
+            val observer = Observer<Contact> {
                 it?.let {
                     userEditText.editText?.setText(it.name)
                     emailEditText.editText?.setText(it.userEmail)
                     phoneEditText.editText?.setText(it.userPhone)
                 }
-            })
+            }
+            contactImported.observe(this, observer)
         }
     }
 }

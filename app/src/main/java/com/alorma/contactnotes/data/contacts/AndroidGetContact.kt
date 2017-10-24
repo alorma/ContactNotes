@@ -6,13 +6,10 @@ import android.net.Uri
 import android.provider.ContactsContract
 import com.alorma.contactnotes.domain.contacts.Contact
 
-class AndroidGetContact(private val contentResolver: ContentResolver) : GetContact {
-    override fun get(userId: String): Contact? {
+class AndroidGetContact(private val contentResolver: ContentResolver) {
 
-    }
-
-    fun loadContact(contactUri: String): Contact {
-        val cursor = contentResolver.query(Uri.parse(contactUri), null,
+    fun loadContact(contactUri: Uri): Contact {
+        val cursor = contentResolver.query(contactUri, null,
                 null, null, null)
 
         if (cursor.moveToFirst()) {

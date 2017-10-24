@@ -1,13 +1,15 @@
 package com.alorma.contactnotes.ui.overview
 
 import android.arch.lifecycle.ViewModel
-import com.alorma.contactnotes.domain.ListContactsWithNotesUseCase
+import com.alorma.contactnotes.data.contacts.ContactsLiveData
+import com.alorma.contactnotes.data.contacts.ListContacts
 
-class OverviewViewModel(private val listContactsWithNotesUseCase: ListContactsWithNotesUseCase) : ViewModel() {
+class OverviewViewModel(private val listContacts: ListContacts) : ViewModel() {
 
-    fun getContacts() = ContactLiveData.INSTANCE
+    private val contactsLiveData = ContactsLiveData.INSTANCE
 
-    fun loadContacts() {
-        listContactsWithNotesUseCase.execute()
+    fun loadContacts(): ContactsLiveData {
+        contactsLiveData.value = listContacts.list()
+        return contactsLiveData
     }
 }
