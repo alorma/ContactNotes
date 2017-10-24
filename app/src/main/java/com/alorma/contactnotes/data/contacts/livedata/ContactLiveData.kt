@@ -1,4 +1,4 @@
-package com.alorma.contactnotes.data.contacts
+package com.alorma.contactnotes.data.contacts.livedata
 
 import android.arch.lifecycle.MutableLiveData
 import com.alorma.contactnotes.domain.contacts.Contact

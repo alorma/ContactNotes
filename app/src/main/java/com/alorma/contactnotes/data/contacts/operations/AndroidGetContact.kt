@@ -1,4 +1,4 @@
-package com.alorma.contactnotes.data.contacts
+package com.alorma.contactnotes.data.contacts.operations
 
 import android.content.ContentResolver
 import android.content.ContentUris

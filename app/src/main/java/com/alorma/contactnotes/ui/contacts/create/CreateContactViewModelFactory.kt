@@ -3,9 +3,9 @@ package com.alorma.contactnotes.ui.contacts.create;
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import android.content.ContentResolver
-import com.alorma.contactnotes.data.contacts.AndroidGetContact
-import com.alorma.contactnotes.data.contacts.ContactsListProvider
-import com.alorma.contactnotes.data.contacts.InsertContact
+import com.alorma.contactnotes.data.contacts.operations.AndroidGetContact
+import com.alorma.contactnotes.data.contacts.store.ContactsListProvider
+import com.alorma.contactnotes.data.contacts.operations.InsertContact
 import com.alorma.contactnotes.domain.validator.*
 
 class CreateContactViewModelFactory(private val contentResolver: ContentResolver) : ViewModelProvider.Factory {

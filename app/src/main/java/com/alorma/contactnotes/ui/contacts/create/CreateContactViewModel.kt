@@ -5,11 +5,10 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
 import android.net.Uri
-import com.alorma.contactnotes.data.contacts.AndroidGetContact
-import com.alorma.contactnotes.data.contacts.ContactLiveData
-import com.alorma.contactnotes.data.contacts.InsertContact
+import com.alorma.contactnotes.data.contacts.operations.AndroidGetContact
+import com.alorma.contactnotes.data.contacts.operations.InsertContact
 import com.alorma.contactnotes.domain.contacts.Contact
-import com.alorma.contactnotes.domain.create.CreateUserForm
+import com.alorma.contactnotes.domain.contacts.create.CreateUserForm
 import com.alorma.contactnotes.domain.validator.Validator
 
 class CreateContactViewModel(private val usernameValidator: Validator<String, String>,

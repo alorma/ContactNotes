@@ -1,8 +1,8 @@
 package com.alorma.contactnotes.ui.overview
 
 import android.arch.lifecycle.ViewModel
-import com.alorma.contactnotes.data.contacts.ContactsLiveData
-import com.alorma.contactnotes.data.contacts.ListContacts
+import com.alorma.contactnotes.data.contacts.livedata.ContactsLiveData
+import com.alorma.contactnotes.data.contacts.operations.ListContacts
 import com.alorma.contactnotes.data.notes.ListContactNotes
 
 class OverviewViewModel(private val listContacts: ListContacts,

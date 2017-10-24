@@ -1,23 +1,22 @@
 package com.alorma.contactnotes.ui.notes
 
 import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
-import com.alorma.contactnotes.data.notes.ErrorNotesLiveData
-import com.alorma.contactnotes.data.notes.NotesListLiveData
-import com.alorma.contactnotes.domain.GetNotesFromContactUseCase
+import com.alorma.contactnotes.arch.ListLiveData
+import com.alorma.contactnotes.data.notes.ListContactNotes
 import com.alorma.contactnotes.domain.notes.Note
 
-class ListNotesViewModel(private val getNotesUseCase: GetNotesFromContactUseCase) : ViewModel() {
+class ListNotesViewModel(private val listContactNotes: ListContactNotes) : ViewModel() {
 
-    fun getData(): LiveData<List<Note>> = NotesListLiveData.INSTANCE
-    fun getError(): LiveData<Exception> = ErrorNotesLiveData.INSTANCE
+    private val notesLiveData = ListLiveData<Note>()
 
-    private lateinit var contactId: String
+    fun load(contactId: String): LiveData<List<Note>> {
+        val list = listContactNotes.list(contactId)
 
-    fun load(contactId: String) {
-        this.contactId = contactId
+        notesLiveData.clear()
+        notesLiveData.addAll(list)
 
-        getNotesUseCase.execute(contactId)
-
+        return Transformations.map(notesLiveData, { input -> input.toList() })
     }
 }

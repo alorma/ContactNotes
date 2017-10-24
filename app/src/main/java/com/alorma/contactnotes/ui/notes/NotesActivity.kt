@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import com.alorma.contactnotes.R
 import com.alorma.contactnotes.ui.note.NoteActivity
 import kotlinx.android.synthetic.main.activity_notes.*
@@ -41,12 +40,9 @@ class NotesActivity : AppCompatActivity() {
         notesViewModel = ViewModelProviders.of(this, NotesViewModelFactory()).get(ListNotesViewModel::class.java)
 
         createAdapter()
-        subscribe()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        notesViewModel.load(getContactId(intent))
+        notesViewModel.load(getContactId(intent)).observe(this, Observer {
+            it?.let { adapter.updateList(it) }
+        })
     }
 
     private fun createAdapter() {
@@ -56,15 +52,6 @@ class NotesActivity : AppCompatActivity() {
         val manager = GridLayoutManager(this, 2)
         recyclerNotes.layoutManager = manager
         recyclerNotes.adapter = adapter
-    }
-
-    private fun subscribe() {
-        notesViewModel.getData().observe(this, Observer {
-            it?.let { adapter.updateList(it) }
-        })
-        notesViewModel.getError().observe(this, Observer {
-            Toast.makeText(this@NotesActivity, "Error", Toast.LENGTH_SHORT).show()
-        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

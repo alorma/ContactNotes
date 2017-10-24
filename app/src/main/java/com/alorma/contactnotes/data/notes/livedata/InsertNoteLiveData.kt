@@ -1,7 +1,6 @@
-package com.alorma.contactnotes.data.notes
+package com.alorma.contactnotes.data.notes.livedata
 
 import android.arch.lifecycle.MutableLiveData
-import com.alorma.contactnotes.domain.notes.Note
 
 class InsertNoteLiveData private constructor() : MutableLiveData<String>() {
 

@@ -1,4 +1,4 @@
-package com.alorma.contactnotes.data.contacts
+package com.alorma.contactnotes.data.contacts.store
 
 import com.alorma.contactnotes.domain.contacts.Contact
 

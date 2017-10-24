@@ -1,4 +1,4 @@
-package com.alorma.contactnotes.domain.create
+package com.alorma.contactnotes.domain.contacts.create
 
 data class CreateUserForm(val userName: String,
                           val androidId: String? = null,
