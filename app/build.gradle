@@ -37,9 +37,6 @@ dependencies {
     implementation "android.arch.lifecycle:extensions:$rootProject.architectureComponentsVersionAlpha"
     kapt "android.arch.lifecycle:compiler:$rootProject.architectureComponentsVersion"
 
-    // RxJava
-    implementation "io.reactivex.rxjava2:rxandroid:$rootProject.rxandroidVersion"
-    implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxjavaVersion"
     // Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 

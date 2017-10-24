@@ -2,7 +2,6 @@ package com.alorma.contactnotes.ui.contacts.create
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
 import android.net.Uri
 import com.alorma.contactnotes.data.contacts.operations.AndroidGetContact
@@ -18,6 +17,7 @@ class CreateContactViewModel(private val usernameValidator: Validator<String, St
                              private val androidGetContact: AndroidGetContact) : ViewModel() {
 
     private val importContact = MutableLiveData<Contact>()
+    private val createContact = MutableLiveData<Boolean>()
 
     fun getUsernameValidationError() = usernameValidator.getReason()
     fun getEmailValidationError() = emailValidator.getReason()
@@ -31,15 +31,12 @@ class CreateContactViewModel(private val usernameValidator: Validator<String, St
             val createUserForm = CreateUserForm(userName = userName,
                     userEmail = userEmail,
                     userPhone = userPhone,
+                    androidId = importContact.value?.androidId,
                     lookup = importContact.value?.lookup)
-            val contact = insertContact.insert(createUserForm)
-            importContact.postValue(contact)
+            insertContact.insert(createUserForm)
+            createContact.value = true
         }
-        return Transformations.switchMap(importContact, { input: Contact? ->
-            val data = MutableLiveData<Boolean>()
-            data.postValue(input != null)
-            data
-        })
+        return createContact
     }
 
     fun contactImported(contactUri: Uri): LiveData<Contact> {

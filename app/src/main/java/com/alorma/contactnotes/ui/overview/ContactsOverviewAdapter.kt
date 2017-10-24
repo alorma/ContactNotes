@@ -1,5 +1,8 @@
 package com.alorma.contactnotes.ui.overview
 
+import android.content.ContentUris
+import android.net.Uri
+import android.provider.ContactsContract
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -39,24 +42,20 @@ class ContactsOverviewAdapter(private val callback: (Contact) -> Unit) : Recycle
 
             val drawable = getContactDefaultDrawable(contact)
 
-            val options = RequestOptions()
-                    .centerCrop()
-                    .error(drawable)
-                    .placeholder(drawable)
-                    .fallback(drawable)
-                    .priority(Priority.HIGH)
-                    .transforms(CircleCrop())
+            contact.androidId?.let {
+                val options = RequestOptions()
+                        .centerCrop()
+                        .error(drawable)
+                        .placeholder(drawable)
+                        .fallback(drawable)
+                        .priority(Priority.HIGH)
+                        .transforms(CircleCrop())
 
-            Glide.with(contactImage)
-                    .load(contact.photo)
-                    .apply(options)
-                    .into(contactImage)
-
-            contact.photo?.let {
-                if (it.isNotEmpty()) {
-                    contactImage.setImageURI(it)
-                }
-            }
+                Glide.with(contactImage)
+                        .load(getContactPhoto(contact.androidId))
+                        .apply(options)
+                        .into(contactImage)
+            } ?: contactImage.setImageDrawable(drawable)
 
             contact.notes?.let {
                 if (it.isNotEmpty()) {
@@ -75,6 +74,11 @@ class ContactsOverviewAdapter(private val callback: (Contact) -> Unit) : Recycle
             itemView.setOnClickListener {
                 callback.invoke(contact)
             }
+        }
+
+        private fun getContactPhoto(androidId: String): Uri {
+            val contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, androidId.toLong())
+            return Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY)
         }
 
         private fun getContactDefaultDrawable(contact: Contact): TextDrawable {

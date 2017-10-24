@@ -1,7 +1,6 @@
 package com.alorma.contactnotes.data.contacts.operations
 
 import android.content.ContentResolver
-import android.content.ContentUris
 import android.net.Uri
 import android.provider.ContactsContract
 import com.alorma.contactnotes.domain.contacts.Contact
@@ -25,9 +24,12 @@ class AndroidGetContact(private val contentResolver: ContentResolver) {
 
             val email: String? = loadEmail(id)
             val phone: String? = loadPhone(id)
-            val photo: String? = loadPhoto(id)
 
-            return Contact(id, name = name, lookup = lookup, userEmail = email, userPhone = phone, photo = photo)
+            return Contact(androidId = id,
+                    name = name,
+                    lookup = lookup,
+                    userEmail = email,
+                    userPhone = phone)
         } else {
             throw Exception()
         }
@@ -59,11 +61,5 @@ class AndroidGetContact(private val contentResolver: ContentResolver) {
 
         cur1.close()
         return phone
-    }
-
-    private fun loadPhoto(id: String): String? {
-        val contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, id.toLong())
-        val photoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY)
-        return photoUri.toString()
     }
 }
