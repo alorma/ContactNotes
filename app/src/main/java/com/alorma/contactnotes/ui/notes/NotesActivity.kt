@@ -68,7 +68,8 @@ class NotesActivity : AppCompatActivity() {
     }
 
     private fun createNote() {
-        startActivity(NoteActivity.createIntent(this, contactId))
+        notesViewModel.onNoteAdded()
+        //startActivity(NoteActivity.createIntent(this, contactId))
     }
 
     private fun openNote(noteId: String) {

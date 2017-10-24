@@ -18,4 +18,8 @@ class ListLiveData<T> : MutableLiveData<MutableList<T>>() {
     fun clear() {
         value = mutableListOf()
     }
+
+    fun count(): Int {
+        return value?.size ?: 0
+    }
 }

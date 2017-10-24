@@ -42,6 +42,10 @@ class OverviewActivity : AppCompatActivity() {
 
         viewModel = ViewModelProviders.of(this, OverViewModelFactory()).get(OverviewViewModel::class.java)
         subscribe()
+    }
+
+    override fun onStart() {
+        super.onStart()
         viewModel.loadContacts()
     }
 
@@ -62,7 +66,7 @@ class OverviewActivity : AppCompatActivity() {
     }
 
     private fun subscribe() {
-        viewModel.loadContacts().observe(this, Observer {
+        viewModel.contactsLiveData.observe(this, Observer {
             it?.let {
                 contactsAdapter.updateItems(it)
 

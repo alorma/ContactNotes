@@ -8,13 +8,12 @@ import com.alorma.contactnotes.data.notes.ListContactNotes
 class OverviewViewModel(private val listContacts: ListContacts,
                         private val listContactNotes: ListContactNotes) : ViewModel() {
 
-    private val contactsLiveData = ContactsLiveData.INSTANCE
+    val contactsLiveData = ContactsLiveData.INSTANCE
 
-    fun loadContacts(): ContactsLiveData {
+    fun loadContacts() {
         contactsLiveData.value = listContacts.list().map {
             val notes = listContactNotes.list(it.id)
             it.copy(notes = notes)
         }
-        return contactsLiveData
     }
 }

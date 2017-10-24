@@ -1,6 +1,5 @@
 package com.alorma.contactnotes.data.notes
 
-import com.alorma.contactnotes.BuildConfig
 import com.alorma.contactnotes.domain.notes.Note
 
 class ContactsNotesProvider private constructor() {
@@ -28,9 +27,6 @@ class ContactsNotesProvider private constructor() {
         val mutableListOf = mutableListOf<Note>()
         items[userId]?.let {
             mutableListOf.addAll(it.values)
-        }
-        if (mutableListOf.size == 0 && BuildConfig.DEBUG) {
-            mutableListOf.add(Note(text = "Fake text"))
         }
         return mutableListOf
     }
