@@ -1,5 +1,6 @@
 package com.alorma.contactnotes.data.notes
 
+import com.alorma.contactnotes.data.notes.livedata.NotesLiveDataProvider
 import com.alorma.contactnotes.domain.notes.Note
 
 class ContactsNotesProvider private constructor() {
@@ -20,14 +21,24 @@ class ContactsNotesProvider private constructor() {
         }
         items[userId]?.apply {
             put(note.id, note)
+
+            updateLiveData(userId, values.toList())
+        }
+    }
+
+    private fun updateLiveData(userId: String, values: List<Note>) {
+        val liveData = NotesLiveDataProvider.INSTANCE.get(userId)
+        liveData?.apply {
+            clear()
+            addAll(values.sortedByDescending { it.date })
         }
     }
 
     fun list(userId: String): List<Note> {
-        val mutableListOf = mutableListOf<Note>()
-        items[userId]?.let {
-            mutableListOf.addAll(it.values)
-        }
-        return mutableListOf
+        return items[userId]?.let {
+            val items = it.values.toList().sortedByDescending { it.date }
+            updateLiveData(userId, items)
+            items
+        } ?: listOf()
     }
 }

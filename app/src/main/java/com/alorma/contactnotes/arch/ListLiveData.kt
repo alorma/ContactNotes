@@ -4,14 +4,14 @@ import android.arch.lifecycle.MutableLiveData
 
 class ListLiveData<T> : MutableLiveData<MutableList<T>>() {
     fun add(t: T) {
-        val list = value
-        list?.add(t)
+        val list = value ?: mutableListOf()
+        list.add(t)
         value = list
     }
 
-    fun addAll(items: Collection<T>) {
-        val list = value
-        list?.addAll(items)
+    fun addAll(items: List<T>) {
+        val list = value ?: mutableListOf()
+        list.addAll(items)
         value = list
     }
 

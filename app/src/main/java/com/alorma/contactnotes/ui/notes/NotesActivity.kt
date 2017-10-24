@@ -40,7 +40,9 @@ class NotesActivity : AppCompatActivity() {
         notesViewModel = ViewModelProviders.of(this, NotesViewModelFactory()).get(ListNotesViewModel::class.java)
 
         createAdapter()
-        notesViewModel.load(getContactId(intent)).observe(this, Observer {
+        notesViewModel.load(getContactId(intent))
+
+        notesViewModel.notesLiveData?.observe(this, Observer {
             it?.let { adapter.updateList(it) }
         })
     }
