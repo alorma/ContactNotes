@@ -64,7 +64,7 @@ class OverviewActivity : AppCompatActivity() {
     private fun subscribe() {
         viewModel.loadContacts().observe(this, Observer {
             it?.let {
-                contactsAdapter.addItems(it)
+                contactsAdapter.updateItems(it)
 
                 if (contactsAdapter.itemCount == 0) {
                     onContactsEmpty()
