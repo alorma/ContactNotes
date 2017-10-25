@@ -9,11 +9,14 @@ open class EitherLiveData<T> {
     private val valueLiveData = MutableLiveData<T>()
     private val errorLiveData = MutableLiveData<Throwable>()
 
-    protected fun post(value: T) {
+    val value
+        get() = valueLiveData.value
+
+    fun post(value: T) {
         valueLiveData.postValue(value)
     }
 
-    protected fun post(throwable: Throwable) {
+    fun post(throwable: Throwable) {
         errorLiveData.postValue(throwable)
     }
 

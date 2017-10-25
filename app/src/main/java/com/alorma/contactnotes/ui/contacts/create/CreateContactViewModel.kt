@@ -4,6 +4,9 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.net.Uri
+import com.alorma.contactnotes.arch.Either
+import com.alorma.contactnotes.arch.EitherLiveData
+import com.alorma.contactnotes.arch.fold
 import com.alorma.contactnotes.data.contacts.operations.AndroidGetContact
 import com.alorma.contactnotes.data.contacts.operations.InsertContact
 import com.alorma.contactnotes.domain.contacts.Contact
@@ -16,7 +19,7 @@ class CreateContactViewModel(private val usernameValidator: Validator<String, St
                              private val insertContact: InsertContact,
                              private val androidGetContact: AndroidGetContact) : ViewModel() {
 
-    private val importContact = MutableLiveData<Contact>()
+    private val importContact = EitherLiveData<Contact>()
     private val createContact = MutableLiveData<Boolean>()
 
     fun getUsernameValidationError() = usernameValidator.getReason()
@@ -28,20 +31,28 @@ class CreateContactViewModel(private val usernameValidator: Validator<String, St
                 && (userEmail.isEmpty() || emailValidator.validate(userEmail))
                 && (userPhone.isEmpty() || phoneValidator.validate(userPhone))) {
 
-            val createUserForm = CreateUserForm(userName = userName,
+            val createUserForm = CreateUserForm(
+                    userName = userName,
                     userEmail = userEmail,
                     userPhone = userPhone,
                     androidId = importContact.value?.androidId,
                     lookup = importContact.value?.lookup)
+
             insertContact.insert(createUserForm)
             createContact.value = true
         }
         return createContact
     }
 
-    fun contactImported(contactUri: Uri): LiveData<Contact> {
-        val contact = androidGetContact.loadContact(contactUri)
-        importContact.postValue(contact)
+    fun contactImported(contactUri: Uri): EitherLiveData<Contact> {
+        val contact: Either<Exception, Contact> = androidGetContact.loadContact(contactUri)
+
+        contact.fold({
+            importContact.post(it)
+        }, {
+            importContact.post(it)
+        })
+
         return importContact
     }
 }

@@ -154,14 +154,19 @@ class CreateContactActivity : AppCompatActivity() {
     private fun onImportUserReceived(uri: Uri?) {
         uri?.let {
             val contactImported = contactViewModel.contactImported(it)
-            val observer = Observer<Contact> {
-                it?.let {
+            contactImported.subscribe(this, {
+                it.let {
                     userEditText.editText?.setText(it.name)
                     emailEditText.editText?.setText(it.userEmail)
                     phoneEditText.editText?.setText(it.userPhone)
                 }
-            }
-            contactImported.observe(this, observer)
+            }, {
+                showErrorImport()
+            })
         }
+    }
+
+    private fun showErrorImport() {
+        Toast.makeText(this, "Contact not imported", Toast.LENGTH_SHORT).show()
     }
 }

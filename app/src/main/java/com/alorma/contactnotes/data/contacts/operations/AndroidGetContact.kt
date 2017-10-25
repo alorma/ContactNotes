@@ -3,11 +3,22 @@ package com.alorma.contactnotes.data.contacts.operations
 import android.content.ContentResolver
 import android.net.Uri
 import android.provider.ContactsContract
+import com.alorma.contactnotes.arch.Either
+import com.alorma.contactnotes.arch.Left
+import com.alorma.contactnotes.arch.Right
 import com.alorma.contactnotes.domain.contacts.Contact
 
 class AndroidGetContact(private val contentResolver: ContentResolver) {
 
-    fun loadContact(contactUri: Uri): Contact {
+    fun loadContact(contactUri: Uri): Either<Exception, Contact> {
+        return try {
+            Right(getContact(contactUri))
+        } catch (noElement: NoSuchElementException) {
+            Left(noElement)
+        }
+    }
+
+    private fun getContact(contactUri: Uri): Contact {
         val cursor = contentResolver.query(contactUri, null,
                 null, null, null)
 
@@ -31,7 +42,7 @@ class AndroidGetContact(private val contentResolver: ContentResolver) {
                     userEmail = email,
                     userPhone = phone)
         } else {
-            throw Exception()
+            throw NoSuchElementException()
         }
     }
 
