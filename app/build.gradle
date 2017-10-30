@@ -35,6 +35,8 @@ dependencies {
     // Architecture components
     implementation "android.arch.lifecycle:runtime:$rootProject.architectureComponentsVersion"
     implementation "android.arch.lifecycle:extensions:$rootProject.architectureComponentsVersionAlpha"
+    implementation "android.arch.persistence.room:runtime:$rootProject.architectureComponentsVersion"
+    kapt "android.arch.persistence.room:compiler:$rootProject.architectureComponentsVersion"
     kapt "android.arch.lifecycle:compiler:$rootProject.architectureComponentsVersion"
 
     // Kotlin

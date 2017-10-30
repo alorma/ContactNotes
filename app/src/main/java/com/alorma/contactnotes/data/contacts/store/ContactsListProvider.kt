@@ -4,35 +4,42 @@ import com.alorma.contactnotes.arch.Either
 import com.alorma.contactnotes.arch.Left
 import com.alorma.contactnotes.arch.Right
 import com.alorma.contactnotes.domain.contacts.Contact
+import com.alorma.contactnotes.domain.contacts.map
+import java.util.*
 
-class ContactsListProvider private constructor() {
-
-    private val items = mutableMapOf<String, Contact>()
-
-    private object Holder {
-        val INSTANCE = ContactsListProvider()
-    }
+class ContactsListProvider private constructor(private val db: ContactDao) {
 
     companion object {
-        val INSTANCE: ContactsListProvider by lazy { Holder.INSTANCE }
+        var INSTANCE: ContactsListProvider? = null
+
+        fun init(db: ContactDao) {
+            INSTANCE = ContactsListProvider(db)
+        }
     }
 
     fun add(contact: Contact) {
-        items.put(contact.id, contact)
+        db.insertAll(contact.map {
+            mapContact(contact)
+        })
     }
 
     fun list(): List<Contact> {
-        val mutableListOf = mutableListOf<Contact>()
-        mutableListOf.addAll(items.values)
-        return mutableListOf
+        return db.all.map {
+            mapEntity(it)
+        }
     }
 
     fun get(userId: String): Either<Contact, Exception> {
-        val contact = items[userId]
-        return if (contact == null) {
-            Right(NoSuchElementException())
-        } else {
-            Left(contact)
+        return db.findById(userId).map {
+            it?.let {
+                Left(mapEntity(it))
+            } ?: Right(NoSuchElementException())
         }
     }
+
+    private fun mapContact(contact: Contact) =
+            ContactEntity(UUID.randomUUID().toString(), contact.androidId, contact.name, contact.userEmail, contact.userPhone)
+
+    private fun mapEntity(it: ContactEntity) =
+            Contact(androidId = it.id, name = it.name, userEmail = it.userEmail, userPhone = it.userPhone)
 }
