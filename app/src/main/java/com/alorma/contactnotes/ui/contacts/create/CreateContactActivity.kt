@@ -14,6 +14,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import com.alorma.contactnotes.R
+import com.alorma.contactnotes.arch.DaggerDiComponent
 import com.alorma.contactnotes.domain.contacts.Contact
 import com.crashlytics.android.answers.Answers
 import com.crashlytics.android.answers.CustomEvent
@@ -40,6 +41,8 @@ class CreateContactActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.create_contact_activity)
+
+        DaggerDiComponent.create().inject(this)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 

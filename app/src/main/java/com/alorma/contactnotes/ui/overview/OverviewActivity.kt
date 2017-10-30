@@ -9,9 +9,11 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.view.View.*
 import com.alorma.contactnotes.R
+import com.alorma.contactnotes.arch.DaggerDiComponent
 import com.alorma.contactnotes.ui.contacts.create.CreateContactActivity
 import com.alorma.contactnotes.ui.notes.NotesActivity
 import kotlinx.android.synthetic.main.activity_overview.*
+import javax.inject.Inject
 
 class OverviewActivity : AppCompatActivity() {
 
@@ -26,9 +28,16 @@ class OverviewActivity : AppCompatActivity() {
         })
     }
 
+    @Inject
+    lateinit var factory: OverViewModelFactory
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_overview)
+
+        DaggerDiComponent.create().inject(this)
+
+
         initView()
     }
 
@@ -40,7 +49,7 @@ class OverviewActivity : AppCompatActivity() {
         setupFAB()
         setupAdapter()
 
-        viewModel = ViewModelProviders.of(this, OverViewModelFactory()).get(OverviewViewModel::class.java)
+        viewModel = ViewModelProviders.of(this, factory).get(OverviewViewModel::class.java)
         subscribe()
     }
 

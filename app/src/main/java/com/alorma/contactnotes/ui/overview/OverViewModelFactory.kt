@@ -6,8 +6,9 @@ import com.alorma.contactnotes.data.contacts.store.ContactsListProvider
 import com.alorma.contactnotes.data.contacts.operations.ListContacts
 import com.alorma.contactnotes.data.notes.ContactsNotesProvider
 import com.alorma.contactnotes.data.notes.ListContactNotes
+import javax.inject.Inject
 
-class OverViewModelFactory : ViewModelProvider.Factory {
+class OverViewModelFactory @Inject constructor() : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>?): T {
         return when (modelClass) {
             OverviewViewModel::class.java -> OverviewViewModel(provideListContacts(), provideListNotes()) as T
