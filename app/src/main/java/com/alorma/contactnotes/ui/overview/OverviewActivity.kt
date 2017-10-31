@@ -75,6 +75,7 @@ class OverviewActivity : AppCompatActivity() {
     }
 
     private fun subscribe() {
+/*
         viewModel.contactsLiveData.observe(this, Observer {
             it?.let {
                 contactsAdapter.updateItems(it)
@@ -87,6 +88,7 @@ class OverviewActivity : AppCompatActivity() {
                 }
             }
         })
+        */
     }
 
     private fun onContactsEmpty() {

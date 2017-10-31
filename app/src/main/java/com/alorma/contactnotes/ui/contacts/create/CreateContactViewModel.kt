@@ -1,58 +1,46 @@
 package com.alorma.contactnotes.ui.contacts.create
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.ViewModel
 import android.net.Uri
 import com.alorma.contactnotes.arch.Either
-import com.alorma.contactnotes.arch.EitherLiveData
-import com.alorma.contactnotes.arch.fold
 import com.alorma.contactnotes.data.contacts.operations.AndroidGetContact
 import com.alorma.contactnotes.data.contacts.operations.InsertContact
 import com.alorma.contactnotes.domain.contacts.Contact
 import com.alorma.contactnotes.domain.contacts.create.CreateUserForm
 import com.alorma.contactnotes.domain.validator.Validator
+import com.jakewharton.rxrelay2.Relay
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.Consumer
+import io.reactivex.schedulers.Schedulers
 
-class CreateContactViewModel(private val usernameValidator: Validator<String, String>,
-                             private val emailValidator: Validator<String, String>,
-                             private val phoneValidator: Validator<String, String>,
+class CreateContactViewModel(private val createUserValidator: Validator<CreateUserForm, Exception>,
                              private val insertContact: InsertContact,
                              private val androidGetContact: AndroidGetContact) : ViewModel() {
 
-    private val importContact = EitherLiveData<Contact>()
-    private val createContact = MutableLiveData<Boolean>()
-
-    fun getUsernameValidationError() = usernameValidator.getReason()
-    fun getEmailValidationError() = emailValidator.getReason()
-    fun getPhoneValidationError() = phoneValidator.getReason()
-
-    fun create(userName: String, userEmail: String, userPhone: String): LiveData<Boolean> {
-        if (usernameValidator.validate(userName)
-                && (userEmail.isEmpty() || emailValidator.validate(userEmail))
-                && (userPhone.isEmpty() || phoneValidator.validate(userPhone))) {
-
-            val createUserForm = CreateUserForm(
-                    userName = userName,
-                    userEmail = userEmail,
-                    userPhone = userPhone,
-                    androidId = importContact.value?.androidId,
-                    lookup = importContact.value?.lookup)
-
-            insertContact.insert(createUserForm)
-            createContact.value = true
-        }
-        return createContact
+    fun setupCreateContact(lifecycleRelay: Relay<Lifecycle.Event>,
+                           contactRelay: Relay<CreateUserForm>,
+                           consumer: Consumer<Either<Throwable, Contact>>) {
+        filterState(lifecycleRelay, Lifecycle.Event.ON_CREATE)
+                .switchMap { contactRelay }
+                .subscribeOn(Schedulers.io())
+                .map { createUserValidator.validate(it) }
+                .map { insertContact.insert(it) }
+                .observeOn(AndroidSchedulers.mainThread())
+                .takeUntil(filterState(lifecycleRelay, Lifecycle.Event.ON_DESTROY))
+                .subscribe(consumer)
     }
 
-    fun contactImported(contactUri: Uri): EitherLiveData<Contact> {
-        val contact: Either<Exception, Contact> = androidGetContact.loadContact(contactUri)
-
-        contact.fold({
-            importContact.post(it)
-        }, {
-            importContact.post(it)
-        })
-
-        return importContact
+    fun setupContactImported(lifecycleRelay: Relay<Lifecycle.Event>, uriRelay: Relay<Uri>, consumer: Consumer<Either<Throwable, Contact>>) {
+        filterState(lifecycleRelay, Lifecycle.Event.ON_RESUME)
+                .switchMap { uriRelay }
+                .subscribeOn(Schedulers.io())
+                .map { androidGetContact.loadContact(it) }
+                .observeOn(AndroidSchedulers.mainThread())
+                .takeUntil(filterState(lifecycleRelay, Lifecycle.Event.ON_DESTROY))
+                .subscribe(consumer)
     }
+
+    private fun filterState(lifecycleRelay: Observable<Lifecycle.Event>, state: Lifecycle.Event) = lifecycleRelay.filter { it == state }
 }

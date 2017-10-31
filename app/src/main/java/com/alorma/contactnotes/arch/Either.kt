@@ -1,5 +1,7 @@
 package com.alorma.contactnotes.arch;
 
+import io.reactivex.Single
+
 @Suppress("unused")
 sealed class Either<out L, out R>
 
@@ -12,8 +14,6 @@ inline fun <L, R, T> Either<L, R>.fold(left: (L) -> T, right: (R) -> T): T =
             is Right -> right(value)
         }
 
-inline fun <L, R, T> Either<L, R>.flatMap(f: (R) -> Either<L, T>): Either<L, T> =
-        fold({ this as Left }, f)
+inline fun <L, R, T> Either<L, R>.flatMap(f: (R) -> Either<L, T>): Either<L, T> = fold({ this as Left }, f)
 
-inline fun <L, R, T> Either<L, R>.map(f: (R) -> T): Either<L, T> =
-        flatMap { Right(f(it)) }
+inline fun <L, R, T> Either<L, R>.map(f: (R) -> T): Either<L, T> = flatMap { Right(f(it)) }

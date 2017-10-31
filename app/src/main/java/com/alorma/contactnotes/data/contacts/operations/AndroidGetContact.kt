@@ -10,7 +10,7 @@ import com.alorma.contactnotes.domain.contacts.Contact
 
 class AndroidGetContact(private val contentResolver: ContentResolver) {
 
-    fun loadContact(contactUri: Uri): Either<Exception, Contact> {
+    fun loadContact(contactUri: Uri): Either<Throwable, Contact> {
         return try {
             Right(getContact(contactUri))
         } catch (noElement: NoSuchElementException) {

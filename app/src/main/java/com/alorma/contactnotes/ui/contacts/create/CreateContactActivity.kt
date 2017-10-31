@@ -2,7 +2,6 @@ package com.alorma.contactnotes.ui.contacts.create
 
 import android.Manifest
 import android.app.Activity
-import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
@@ -15,13 +14,19 @@ import android.view.MenuItem
 import android.widget.Toast
 import com.alorma.contactnotes.R
 import com.alorma.contactnotes.arch.DaggerDiComponent
+import com.alorma.contactnotes.arch.Either
+import com.alorma.contactnotes.arch.LifeCycleRelay
+import com.alorma.contactnotes.arch.fold
 import com.alorma.contactnotes.domain.contacts.Contact
+import com.alorma.contactnotes.domain.contacts.create.CreateUserForm
 import com.crashlytics.android.answers.Answers
 import com.crashlytics.android.answers.CustomEvent
+import com.jakewharton.rxrelay2.BehaviorRelay
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.listener.PermissionDeniedResponse
 import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.single.BasePermissionListener
+import io.reactivex.functions.Consumer
 import kotlinx.android.synthetic.main.create_contact_activity.*
 
 
@@ -35,6 +40,12 @@ class CreateContactActivity : AppCompatActivity() {
 
         fun createReturnIntent() = Intent()
     }
+
+    private lateinit var contactId: String
+
+    private val lifecycleRelay = LifeCycleRelay()
+    private val contactImportedRelay: BehaviorRelay<Uri> = BehaviorRelay.create()
+    private val createContactRelay: BehaviorRelay<CreateUserForm> = BehaviorRelay.create()
 
     private lateinit var contactViewModel: CreateContactViewModel
 
@@ -96,6 +107,7 @@ class CreateContactActivity : AppCompatActivity() {
     }
 
     private fun subscribe() {
+        /*
         contactViewModel.getUsernameValidationError().observe(this, Observer {
             userEditText.error = it
         })
@@ -105,6 +117,40 @@ class CreateContactActivity : AppCompatActivity() {
         contactViewModel.getPhoneValidationError().observe(this, Observer {
             phoneEditText.error = it
         })
+        */
+
+        lifecycle.addObserver(lifecycleRelay)
+
+        contactViewModel.setupCreateContact(lifecycleRelay.lifecycle, createContactRelay, Consumer {
+            onContactCreated(it)
+        })
+
+        contactViewModel.setupContactImported(lifecycleRelay.lifecycle, contactImportedRelay, Consumer {
+            onContactImport(it)
+        })
+    }
+
+    private fun onContactCreated(it: Either<Throwable, Contact>) {
+        it.fold({
+            showErrorCreateContact()
+        }, {
+            returnSuccess()
+        })
+    }
+
+    private fun onContactImport(it: Either<Throwable, Contact>) {
+        it.fold({
+            showErrorImport()
+        }, {
+            onContactImportedSuccess(it)
+        })
+    }
+
+    private fun onContactImportedSuccess(contact: Contact) {
+        this.contactId = contact.androidId
+        userEditText.editText?.setText(contact.name)
+        emailEditText.editText?.setText(contact.userEmail)
+        phoneEditText.editText?.setText(contact.userPhone)
     }
 
     private fun returnSuccess() {
@@ -122,6 +168,18 @@ class CreateContactActivity : AppCompatActivity() {
         val userEmail = emailEditText.editText?.text.toString()
         val userPhone = phoneEditText.editText?.text.toString()
 
+
+        val form = CreateUserForm(userName = userName,
+                userEmail = userEmail,
+                userPhone = userPhone)
+
+        contactId.let {
+            form.copy(androidId = it)
+        }
+
+        createContactRelay.accept(form)
+
+/*
         contactViewModel.create(userName, userEmail, userPhone).observe(this, Observer {
             it?.let {
                 if (it) {
@@ -134,6 +192,7 @@ class CreateContactActivity : AppCompatActivity() {
                 }
             }
         })
+        */
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -156,17 +215,13 @@ class CreateContactActivity : AppCompatActivity() {
 
     private fun onImportUserReceived(uri: Uri?) {
         uri?.let {
-            val contactImported = contactViewModel.contactImported(it)
-            contactImported.subscribe(this, {
-                it.let {
-                    userEditText.editText?.setText(it.name)
-                    emailEditText.editText?.setText(it.userEmail)
-                    phoneEditText.editText?.setText(it.userPhone)
-                }
-            }, {
-                showErrorImport()
-            })
+            contactImportedRelay.accept(it)
         }
+    }
+
+
+    private fun showErrorCreateContact() {
+        Toast.makeText(this, "Contact not created", Toast.LENGTH_SHORT).show()
     }
 
     private fun showErrorImport() {

@@ -7,10 +7,12 @@ import android.arch.persistence.room.Query;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
+
 @Dao
 public interface ContactDao {
     @Query("SELECT * FROM contacts")
-    List<ContactEntity> getAll();
+    Flowable<List<ContactEntity>> getAll();
 
     @Query("SELECT * FROM contacts WHERE id LIKE :id LIMIT 1")
     ContactEntity findById(String id);

@@ -5,6 +5,7 @@ import com.alorma.contactnotes.arch.Left
 import com.alorma.contactnotes.arch.Right
 import com.alorma.contactnotes.domain.contacts.Contact
 import com.alorma.contactnotes.domain.contacts.map
+import io.reactivex.Flowable
 import java.util.*
 
 class ContactsListProvider private constructor(private val db: ContactDao) {
@@ -17,15 +18,22 @@ class ContactsListProvider private constructor(private val db: ContactDao) {
         }
     }
 
-    fun add(contact: Contact) {
-        db.insertAll(contact.map {
-            mapContact(contact)
-        })
+    fun add(contact: Contact): Either<Throwable, Contact> {
+        return try {
+            db.insertAll(contact.map {
+                mapContact(contact)
+            })
+            Right(contact)
+        } catch (e: Exception) {
+            Left(e)
+        }
     }
 
-    fun list(): List<Contact> {
+    fun list(): Flowable<List<Contact>> {
         return db.all.map {
-            mapEntity(it)
+            it.map {
+                mapEntity(it)
+            }
         }
     }
 
