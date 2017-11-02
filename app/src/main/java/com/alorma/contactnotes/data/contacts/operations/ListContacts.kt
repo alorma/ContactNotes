@@ -8,7 +8,7 @@ import io.reactivex.Observable
 
 class ListContacts(private val contactsProvider: ContactsListProvider?) {
 
-    fun list(): Observable<Either<Exception, List<Contact>>> {
+    fun list(): Observable<Either<Throwable, List<Contact>>> {
         return Observable.fromCallable {
             contactsProvider?.list() ?: Left(NullPointerException("ContactsListProvider is null"))
         }

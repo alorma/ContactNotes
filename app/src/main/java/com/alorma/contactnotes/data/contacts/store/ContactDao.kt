@@ -1,9 +1,6 @@
 package com.alorma.contactnotes.data.contacts.store
 
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Delete
-import android.arch.persistence.room.Insert
-import android.arch.persistence.room.Query
+import android.arch.persistence.room.*
 
 @Dao
 interface ContactDao {
@@ -13,8 +10,14 @@ interface ContactDao {
     @Query("SELECT * FROM contacts WHERE id LIKE :id LIMIT 1")
     fun findById(id: String): ContactEntity
 
-    @Insert
+    @Query("SELECT * FROM contacts WHERE androidId LIKE :id LIMIT 1")
+    fun findByAndroidId(id: String): ContactEntity
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg users: ContactEntity)
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    fun update(contactEntity: ContactEntity)
 
     @Delete
     fun delete(user: ContactEntity)

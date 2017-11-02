@@ -17,14 +17,17 @@ class OverviewViewModel(private val listContacts: ListContacts,
 
     fun subscribeLoadContacts(lifecycleRelay: Relay<Lifecycle.Event>,
                               consumer: Consumer<Either<Throwable, List<Contact>>>) {
-        filterState(lifecycleRelay, Lifecycle.Event.ON_CREATE)
+        filterState(lifecycleRelay, Lifecycle.Event.ON_START)
                 .observeOn(Schedulers.io())
                 .flatMap { listContacts.list() }
                 .map {
                     it.map {
                         it.map {
-                            val notes = listContactNotes.list(it.id)
-                            it.copy(notes = notes)
+                            val let = it.id?.let {
+                                listContactNotes.list(it)
+
+                            }
+                            it.copy(notes = let)
                         }
                     }
                 }

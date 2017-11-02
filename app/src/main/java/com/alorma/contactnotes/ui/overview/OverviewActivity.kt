@@ -20,14 +20,12 @@ import javax.inject.Inject
 
 class OverviewActivity : BaseActivity() {
 
-    companion object {
-        private const val CREATE_CONTACT_REQUEST_CODE: Int = 1234
-    }
-
     private lateinit var viewModel: OverviewViewModel
     private val contactsAdapter: ContactsOverviewAdapter by lazy {
         ContactsOverviewAdapter({
-            startActivity(NotesActivity.newInstance(this@OverviewActivity, it.id))
+            it.id?.let {
+                startActivity(NotesActivity.newInstance(this@OverviewActivity, it))
+            }
         })
     }
 
