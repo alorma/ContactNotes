@@ -1,5 +1,6 @@
 package com.alorma.contactnotes.domain.contacts.create
 
+import com.alorma.contactnotes.domain.exception.UserEmailException
 import com.alorma.contactnotes.domain.validator.ValidationRule
 
 class ValidUserEmail(private vararg val rules: ValidationRule<String, String>) : ValidationRule<CreateUserForm, Exception> {
@@ -14,7 +15,7 @@ class ValidUserEmail(private vararg val rules: ValidationRule<String, String>) :
     }
 
     override fun reason(t: CreateUserForm): Exception {
-        return Exception()
+        return UserEmailException()
     }
 
 }

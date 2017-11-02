@@ -7,14 +7,17 @@ import com.alorma.contactnotes.arch.Either
 import com.alorma.contactnotes.arch.Left
 import com.alorma.contactnotes.arch.Right
 import com.alorma.contactnotes.domain.contacts.Contact
+import io.reactivex.Single
 
 class AndroidGetContact(private val contentResolver: ContentResolver) {
 
-    fun loadContact(contactUri: Uri): Either<Throwable, Contact> {
-        return try {
-            Right(getContact(contactUri))
-        } catch (noElement: NoSuchElementException) {
-            Left(noElement)
+    fun loadContact(contactUri: Uri): Single<Either<Throwable, Contact>> {
+        return Single.fromCallable {
+            try {
+                Right(getContact(contactUri))
+            } catch (noElement: NoSuchElementException) {
+                Left(noElement)
+            }
         }
     }
 

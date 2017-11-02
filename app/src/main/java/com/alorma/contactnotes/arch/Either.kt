@@ -1,7 +1,5 @@
 package com.alorma.contactnotes.arch;
 
-import io.reactivex.Single
-
 @Suppress("unused")
 sealed class Either<out L, out R>
 

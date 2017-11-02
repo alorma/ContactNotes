@@ -11,7 +11,7 @@ import io.reactivex.schedulers.Schedulers
 class OverviewViewModel(private val listContacts: ListContacts,
                         private val listContactNotes: ListContactNotes) : ViewModel() {
 
-    val contactsLiveData = MutableLiveData<List<Contact>>()
+    private val contactsLiveData = MutableLiveData<List<Contact>>()
 
     fun loadContacts() {
         listContacts.list()

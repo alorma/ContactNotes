@@ -11,6 +11,7 @@ import com.alorma.contactnotes.domain.contacts.create.CreateUserForm
 import com.alorma.contactnotes.domain.validator.Validator
 import com.jakewharton.rxrelay2.Relay
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
@@ -24,21 +25,21 @@ class CreateContactViewModel(private val createUserValidator: Validator<CreateUs
                            consumer: Consumer<Either<Throwable, Contact>>) {
         filterState(lifecycleRelay, Lifecycle.Event.ON_CREATE)
                 .switchMap { contactRelay }
-                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
                 .map { createUserValidator.validate(it) }
-                .map { insertContact.insert(it) }
-                .observeOn(AndroidSchedulers.mainThread())
+                .flatMapSingle { insertContact.insert(it) }
                 .takeUntil(filterState(lifecycleRelay, Lifecycle.Event.ON_DESTROY))
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(consumer)
     }
 
     fun setupContactImported(lifecycleRelay: Relay<Lifecycle.Event>, uriRelay: Relay<Uri>, consumer: Consumer<Either<Throwable, Contact>>) {
         filterState(lifecycleRelay, Lifecycle.Event.ON_RESUME)
                 .switchMap { uriRelay }
-                .subscribeOn(Schedulers.io())
-                .map { androidGetContact.loadContact(it) }
-                .observeOn(AndroidSchedulers.mainThread())
+                .flatMapSingle { androidGetContact.loadContact(it) }
                 .takeUntil(filterState(lifecycleRelay, Lifecycle.Event.ON_DESTROY))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(consumer)
     }
 

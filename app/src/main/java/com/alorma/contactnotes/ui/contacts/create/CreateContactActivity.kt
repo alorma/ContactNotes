@@ -13,12 +13,12 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import com.alorma.contactnotes.R
-import com.alorma.contactnotes.arch.DaggerDiComponent
-import com.alorma.contactnotes.arch.Either
-import com.alorma.contactnotes.arch.LifeCycleRelay
-import com.alorma.contactnotes.arch.fold
+import com.alorma.contactnotes.arch.*
 import com.alorma.contactnotes.domain.contacts.Contact
 import com.alorma.contactnotes.domain.contacts.create.CreateUserForm
+import com.alorma.contactnotes.domain.exception.UserEmailException
+import com.alorma.contactnotes.domain.exception.UserNameException
+import com.alorma.contactnotes.domain.exception.UserPhoneException
 import com.crashlytics.android.answers.Answers
 import com.crashlytics.android.answers.CustomEvent
 import com.jakewharton.rxrelay2.BehaviorRelay
@@ -107,18 +107,6 @@ class CreateContactActivity : AppCompatActivity() {
     }
 
     private fun subscribe() {
-        /*
-        contactViewModel.getUsernameValidationError().observe(this, Observer {
-            userEditText.error = it
-        })
-        contactViewModel.getEmailValidationError().observe(this, Observer {
-            emailEditText.error = it
-        })
-        contactViewModel.getPhoneValidationError().observe(this, Observer {
-            phoneEditText.error = it
-        })
-        */
-
         lifecycle.addObserver(lifecycleRelay)
 
         contactViewModel.setupCreateContact(lifecycleRelay.lifecycle, createContactRelay, Consumer {
@@ -132,7 +120,7 @@ class CreateContactActivity : AppCompatActivity() {
 
     private fun onContactCreated(it: Either<Throwable, Contact>) {
         it.fold({
-            showErrorCreateContact()
+            showErrorCreateContact(it)
         }, {
             returnSuccess()
         })
@@ -154,6 +142,10 @@ class CreateContactActivity : AppCompatActivity() {
     }
 
     private fun returnSuccess() {
+        userEditText.error = null
+        emailEditText.error = null
+        phoneEditText.error = null
+
         setResult(Activity.RESULT_OK, createReturnIntent())
         finish()
     }
@@ -178,21 +170,6 @@ class CreateContactActivity : AppCompatActivity() {
         }
 
         createContactRelay.accept(form)
-
-/*
-        contactViewModel.create(userName, userEmail, userPhone).observe(this, Observer {
-            it?.let {
-                if (it) {
-                    userEditText.error = null
-                    emailEditText.error = null
-                    phoneEditText.error = null
-                    returnSuccess()
-                } else {
-                    Toast.makeText(this@CreateContactActivity, "Error creating", Toast.LENGTH_SHORT).show()
-                }
-            }
-        })
-        */
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -220,8 +197,22 @@ class CreateContactActivity : AppCompatActivity() {
     }
 
 
-    private fun showErrorCreateContact() {
-        Toast.makeText(this, "Contact not created", Toast.LENGTH_SHORT).show()
+    private fun showErrorCreateContact(it: Throwable) {
+        when (it) {
+            is UserNameException -> {
+                userEditText.error = it.reason
+            }
+            is UserEmailException -> {
+                emailEditText.error = it.reason
+            }
+            is UserPhoneException -> {
+                phoneEditText.error = it.reason
+            }
+            else -> {
+                Toast.makeText(this, "Contact not created", Toast.LENGTH_SHORT).show()
+                LogExceptionProvider().onError(it)
+            }
+        }
     }
 
     private fun showErrorImport() {

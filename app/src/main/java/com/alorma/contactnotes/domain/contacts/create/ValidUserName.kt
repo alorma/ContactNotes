@@ -1,8 +1,10 @@
 package com.alorma.contactnotes.domain.contacts.create
 
+import com.alorma.contactnotes.domain.exception.CreateUserException
+import com.alorma.contactnotes.domain.exception.UserNameException
 import com.alorma.contactnotes.domain.validator.ValidationRule
 
-class ValidUserName(private vararg val rules: ValidationRule<String, String>) : ValidationRule<CreateUserForm, Exception> {
+class ValidUserName(private vararg val rules: ValidationRule<String, String>) : ValidationRule<CreateUserForm, CreateUserException> {
     override fun validate(t: CreateUserForm?): Boolean {
         return t?.map { it.userName }?.let {
             check(it)
@@ -21,7 +23,7 @@ class ValidUserName(private vararg val rules: ValidationRule<String, String>) : 
         }.not()
     }
 
-    override fun reason(t: CreateUserForm): Exception {
-        return Exception()
+    override fun reason(t: CreateUserForm): CreateUserException {
+        return UserNameException(rule.reason(t.userName))
     }
 }

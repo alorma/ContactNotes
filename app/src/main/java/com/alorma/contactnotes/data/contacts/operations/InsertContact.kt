@@ -9,14 +9,16 @@ import java.util.*
 
 class InsertContact(private val contactsProvider: ContactsListProvider?) {
 
-    fun insert(createUserForm: Either<Throwable, CreateUserForm>): Either<Throwable, Contact> {
-        return createUserForm.flatMap {
-            val contact = Contact(UUID.randomUUID().toString(),
-                    androidId = it.androidId ?: "",
-                    name = it.userName,
-                    userPhone = it.userPhone,
-                    userEmail = it.userEmail)
-            contactsProvider?.add(contact) ?: Left(NullPointerException("ContactsListProvider is null"))
+    fun insert(createUserForm: Either<Throwable, CreateUserForm>): Single<Either<Throwable, Contact>> {
+        return Single.fromCallable {
+            createUserForm.flatMap {
+                val contact = Contact(UUID.randomUUID().toString(),
+                        androidId = it.androidId ?: "",
+                        name = it.userName,
+                        userPhone = it.userPhone,
+                        userEmail = it.userEmail)
+                contactsProvider?.add(contact) ?: Left(NullPointerException("ContactsListProvider is null"))
+            }
         }
     }
 }
