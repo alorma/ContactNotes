@@ -32,7 +32,7 @@ class CreateContactViewModelFactory(private val contentResolver: ContentResolver
 
     private fun buildUsernameValidator() = ValidUserName(NotEmptyRule(), MinLengthRule(3), MaxLengthRule(50))
 
-    private fun buildEmailValidator() = ValidUserEmail(NotEmptyRule(), NoSpacesRule(), MinLengthRule(5), EmailRule())
+    private fun buildEmailValidator() = ValidUserEmail(NoSpacesRule(), MinLengthRule(5), EmailRule())
 
-    private fun buildPhoneValidator() = ValidUserPhone(NotEmptyRule(), PhoneRule())
+    private fun buildPhoneValidator() = ValidUserPhone(PhoneRule())
 }

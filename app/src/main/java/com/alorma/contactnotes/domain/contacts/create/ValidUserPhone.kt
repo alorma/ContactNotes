@@ -6,8 +6,8 @@ import com.alorma.contactnotes.domain.validator.ValidationRule
 
 class ValidUserPhone(private vararg val rules: ValidationRule<String, String>) : ValidationRule<CreateUserForm, CreateUserException> {
     override fun validate(t: CreateUserForm?): Boolean {
-        return t?.let {
-            it.userPhone?.let { check(it) } ?: true
+        return t?.userPhone?.let {
+            it.isEmpty() || check(it)
         } ?: true
     }
 

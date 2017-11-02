@@ -5,8 +5,8 @@ import com.alorma.contactnotes.domain.validator.ValidationRule
 
 class ValidUserEmail(private vararg val rules: ValidationRule<String, String>) : ValidationRule<CreateUserForm, Exception> {
     override fun validate(t: CreateUserForm?): Boolean {
-        return t?.let {
-            it.userEmail?.let { check(it) } ?: true
+        return t?.userEmail?.let {
+            it.isEmpty() || check(it)
         } ?: true
     }
 

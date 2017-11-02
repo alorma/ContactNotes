@@ -42,18 +42,22 @@ class ContactsOverviewAdapter(private val callback: (Contact) -> Unit) : Recycle
             val drawable = getContactDefaultDrawable(contact)
 
             contact.androidId?.let {
-                val options = RequestOptions()
-                        .centerCrop()
-                        .error(drawable)
-                        .placeholder(drawable)
-                        .fallback(drawable)
-                        .priority(Priority.HIGH)
-                        .transforms(CircleCrop())
+                if (it.isNotEmpty()) {
+                    val options = RequestOptions()
+                            .centerCrop()
+                            .error(drawable)
+                            .placeholder(drawable)
+                            .fallback(drawable)
+                            .priority(Priority.HIGH)
+                            .transforms(CircleCrop())
 
-                Glide.with(contactImage)
-                        .load(getContactPhoto(contact.androidId))
-                        .apply(options)
-                        .into(contactImage)
+                    Glide.with(contactImage)
+                            .load(getContactPhoto(contact.androidId))
+                            .apply(options)
+                            .into(contactImage)
+                } else {
+                    contactImage.setImageDrawable(drawable)
+                }
             } ?: contactImage.setImageDrawable(drawable)
 
             contact.notes?.let {
@@ -83,7 +87,7 @@ class ContactsOverviewAdapter(private val callback: (Contact) -> Unit) : Recycle
         private fun getContactDefaultDrawable(contact: Contact): TextDrawable {
             val char = contact.name[0]
             val generator = ColorGenerator.MATERIAL
-            return TextDrawable.builder().buildRound(char.toString(), generator.getColor(char))
+            return TextDrawable.builder().buildRound(char.toString().toUpperCase(), generator.getColor(char))
         }
     }
 
