@@ -36,9 +36,9 @@ class CreateContactViewModel(private val createUserValidator: Validator<CreateUs
     fun setupContactImported(lifecycleRelay: Relay<Lifecycle.Event>, uriRelay: Relay<Uri>, consumer: Consumer<Either<Throwable, Contact>>) {
         filterState(lifecycleRelay, Lifecycle.Event.ON_RESUME)
                 .switchMap { uriRelay }
+                .observeOn(Schedulers.io())
                 .flatMapSingle { androidGetContact.loadContact(it) }
                 .takeUntil(filterState(lifecycleRelay, Lifecycle.Event.ON_DESTROY))
-                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(consumer)
     }
