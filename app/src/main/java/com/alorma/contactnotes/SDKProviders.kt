@@ -8,7 +8,7 @@ import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.answers.Answers
 import io.fabric.sdk.android.Fabric
 
-class SDKsProvider : ContentProvider() {
+class SDKProviders : ContentProvider() {
     override fun insert(p0: Uri?, p1: ContentValues?): Uri {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }

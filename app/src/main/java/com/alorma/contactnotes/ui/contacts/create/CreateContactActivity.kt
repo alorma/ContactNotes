@@ -12,9 +12,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import com.alorma.contactnotes.R
-import com.alorma.contactnotes.arch.DaggerDiComponent
 import com.alorma.contactnotes.arch.Either
-import com.alorma.contactnotes.arch.LogExceptionProvider
+import com.alorma.contactnotes.arch.ExceptionProvider
 import com.alorma.contactnotes.arch.fold
 import com.alorma.contactnotes.domain.contacts.Contact
 import com.alorma.contactnotes.domain.contacts.create.CreateUserForm
@@ -54,8 +53,6 @@ class CreateContactActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.create_contact_activity)
-
-        DaggerDiComponent.create().inject(this)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -210,7 +207,7 @@ class CreateContactActivity : BaseActivity() {
             }
             else -> {
                 Toast.makeText(this, "Contact not created", Toast.LENGTH_SHORT).show()
-                LogExceptionProvider().onError(it)
+                ExceptionProvider().onError(it)
             }
         }
     }

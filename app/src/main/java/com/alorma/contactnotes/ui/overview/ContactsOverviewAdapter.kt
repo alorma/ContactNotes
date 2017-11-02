@@ -11,7 +11,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.alorma.contactnotes.R
 import com.alorma.contactnotes.domain.contacts.Contact
-import com.alorma.contactnotes.setImageURI
 import com.amulyakhare.textdrawable.TextDrawable
 import com.amulyakhare.textdrawable.util.ColorGenerator
 import com.bumptech.glide.Glide

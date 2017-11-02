@@ -1,6 +1,5 @@
 package com.alorma.contactnotes.arch;
 
-@Suppress("unused")
 sealed class Either<out L, out R>
 
 data class Left<out T>(val value: T) : Either<T, Nothing>()

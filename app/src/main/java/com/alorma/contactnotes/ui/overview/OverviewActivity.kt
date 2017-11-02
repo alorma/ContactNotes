@@ -6,9 +6,8 @@ import android.support.v7.widget.GridLayoutManager
 import android.view.View.*
 import android.widget.Toast
 import com.alorma.contactnotes.R
-import com.alorma.contactnotes.arch.DaggerDiComponent
 import com.alorma.contactnotes.arch.Either
-import com.alorma.contactnotes.arch.LogExceptionProvider
+import com.alorma.contactnotes.arch.ExceptionProvider
 import com.alorma.contactnotes.arch.fold
 import com.alorma.contactnotes.domain.contacts.Contact
 import com.alorma.contactnotes.ui.BaseActivity
@@ -16,7 +15,6 @@ import com.alorma.contactnotes.ui.contacts.create.CreateContactActivity
 import com.alorma.contactnotes.ui.notes.NotesActivity
 import io.reactivex.functions.Consumer
 import kotlinx.android.synthetic.main.activity_overview.*
-import javax.inject.Inject
 
 class OverviewActivity : BaseActivity() {
 
@@ -29,15 +27,9 @@ class OverviewActivity : BaseActivity() {
         })
     }
 
-    @Inject
-    lateinit var factory: OverViewModelFactory
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_overview)
-
-        DaggerDiComponent.create().inject(this)
-
 
         initView()
     }
@@ -50,7 +42,7 @@ class OverviewActivity : BaseActivity() {
         setupFAB()
         setupAdapter()
 
-        viewModel = ViewModelProviders.of(this, factory).get(OverviewViewModel::class.java)
+        viewModel = ViewModelProviders.of(this, OverViewModelFactory()).get(OverviewViewModel::class.java)
         subscribe()
     }
 
@@ -78,7 +70,7 @@ class OverviewActivity : BaseActivity() {
 
     private fun onContactLoad(either: Either<Throwable, List<Contact>>) {
         either.fold({
-            LogExceptionProvider().onError(it)
+            ExceptionProvider().onError(it)
             Toast.makeText(this@OverviewActivity, "Error loading contacts", Toast.LENGTH_SHORT).show()
         }, {
             if (it.isEmpty()) {
