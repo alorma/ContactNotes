@@ -41,10 +41,6 @@ class NotesActivity : AppCompatActivity() {
 
         createAdapter()
         notesViewModel.load(getContactId(intent))
-
-        notesViewModel.notesLiveData?.observe(this, Observer {
-            it?.let { adapter.updateList(it) }
-        })
     }
 
     private fun createAdapter() {
@@ -71,7 +67,6 @@ class NotesActivity : AppCompatActivity() {
 
     private fun createNote() {
         notesViewModel.onNoteAdded()
-        //startActivity(NoteActivity.createIntent(this, contactId))
     }
 
     private fun openNote(noteId: String) {

@@ -14,10 +14,10 @@ interface ContactDao {
     fun findByAndroidId(id: String): ContactEntity
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg users: ContactEntity)
+    fun insertAll(vararg contactEntity: ContactEntity)
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    fun update(contactEntity: ContactEntity)
+    fun update(vararg contactEntity: ContactEntity)
 
     @Delete
     fun delete(user: ContactEntity)
