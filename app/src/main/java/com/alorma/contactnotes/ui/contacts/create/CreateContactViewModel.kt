@@ -3,6 +3,7 @@ package com.alorma.contactnotes.ui.contacts.create
 import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.ViewModel
 import android.net.Uri
+import com.alorma.contactnotes.arch.BaseViewModel
 import com.alorma.contactnotes.arch.Either
 import com.alorma.contactnotes.data.contacts.operations.AndroidGetContact
 import com.alorma.contactnotes.data.contacts.operations.InsertContact
@@ -18,7 +19,7 @@ import io.reactivex.schedulers.Schedulers
 
 class CreateContactViewModel(private val createUserValidator: Validator<CreateUserForm, Exception>,
                              private val insertContact: InsertContact,
-                             private val androidGetContact: AndroidGetContact) : ViewModel() {
+                             private val androidGetContact: AndroidGetContact) : BaseViewModel() {
 
     fun setupCreateContact(lifecycleRelay: Relay<Lifecycle.Event>,
                            contactRelay: Relay<CreateUserForm>,
@@ -42,6 +43,4 @@ class CreateContactViewModel(private val createUserValidator: Validator<CreateUs
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(consumer)
     }
-
-    private fun filterState(lifecycleRelay: Observable<Lifecycle.Event>, state: Lifecycle.Event) = lifecycleRelay.filter { it == state }
 }

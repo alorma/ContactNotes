@@ -8,17 +8,20 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
-import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import com.alorma.contactnotes.R
-import com.alorma.contactnotes.arch.*
+import com.alorma.contactnotes.arch.DaggerDiComponent
+import com.alorma.contactnotes.arch.Either
+import com.alorma.contactnotes.arch.LogExceptionProvider
+import com.alorma.contactnotes.arch.fold
 import com.alorma.contactnotes.domain.contacts.Contact
 import com.alorma.contactnotes.domain.contacts.create.CreateUserForm
 import com.alorma.contactnotes.domain.exception.UserEmailException
 import com.alorma.contactnotes.domain.exception.UserNameException
 import com.alorma.contactnotes.domain.exception.UserPhoneException
+import com.alorma.contactnotes.ui.BaseActivity
 import com.crashlytics.android.answers.Answers
 import com.crashlytics.android.answers.CustomEvent
 import com.jakewharton.rxrelay2.BehaviorRelay
@@ -30,7 +33,7 @@ import io.reactivex.functions.Consumer
 import kotlinx.android.synthetic.main.create_contact_activity.*
 
 
-class CreateContactActivity : AppCompatActivity() {
+class CreateContactActivity : BaseActivity() {
 
     companion object {
         val REQ_CONTACT_DIRECTORY = 110
@@ -41,9 +44,8 @@ class CreateContactActivity : AppCompatActivity() {
         fun createReturnIntent() = Intent()
     }
 
-    private lateinit var contactId: String
+    private var contactId: String? = null
 
-    private val lifecycleRelay = LifeCycleRelay()
     private val contactImportedRelay: BehaviorRelay<Uri> = BehaviorRelay.create()
     private val createContactRelay: BehaviorRelay<CreateUserForm> = BehaviorRelay.create()
 
@@ -107,8 +109,6 @@ class CreateContactActivity : AppCompatActivity() {
     }
 
     private fun subscribe() {
-        lifecycle.addObserver(lifecycleRelay)
-
         contactViewModel.setupCreateContact(lifecycleRelay.lifecycle, createContactRelay, Consumer {
             onContactCreated(it)
         })
@@ -165,8 +165,8 @@ class CreateContactActivity : AppCompatActivity() {
                 userEmail = userEmail,
                 userPhone = userPhone)
 
-        contactId.let {
-            form.copy(androidId = it)
+        contactId?.let {
+            form.androidId = it
         }
 
         createContactRelay.accept(form)

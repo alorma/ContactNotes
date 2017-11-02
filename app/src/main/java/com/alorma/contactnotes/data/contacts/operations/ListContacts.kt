@@ -1,13 +1,17 @@
 package com.alorma.contactnotes.data.contacts.operations
 
+import com.alorma.contactnotes.arch.Either
+import com.alorma.contactnotes.arch.Left
 import com.alorma.contactnotes.data.contacts.store.ContactsListProvider
 import com.alorma.contactnotes.domain.contacts.Contact
-import io.reactivex.Flowable
+import io.reactivex.Observable
 
 class ListContacts(private val contactsProvider: ContactsListProvider?) {
 
-    fun list(): Flowable<List<Contact>> {
-        return contactsProvider?.list() ?: Flowable.just(listOf())
+    fun list(): Observable<Either<Exception, List<Contact>>> {
+        return Observable.fromCallable {
+            contactsProvider?.list() ?: Left(NullPointerException("ContactsListProvider is null"))
+        }
     }
 
 }

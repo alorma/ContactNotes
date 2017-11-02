@@ -88,7 +88,7 @@ class ContactsOverviewAdapter(private val callback: (Contact) -> Unit) : Recycle
         }
     }
 
-    fun addItems(contacts: List<Contact>) {
+    private fun addItems(contacts: List<Contact>) {
         items.addAll(contacts)
         notifyDataSetChanged()
     }

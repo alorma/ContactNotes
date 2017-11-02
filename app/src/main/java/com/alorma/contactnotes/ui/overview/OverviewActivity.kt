@@ -1,21 +1,24 @@
 package com.alorma.contactnotes.ui.overview
 
-import android.app.Activity
-import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
-import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.view.View.*
+import android.widget.Toast
 import com.alorma.contactnotes.R
 import com.alorma.contactnotes.arch.DaggerDiComponent
+import com.alorma.contactnotes.arch.Either
+import com.alorma.contactnotes.arch.LogExceptionProvider
+import com.alorma.contactnotes.arch.fold
+import com.alorma.contactnotes.domain.contacts.Contact
+import com.alorma.contactnotes.ui.BaseActivity
 import com.alorma.contactnotes.ui.contacts.create.CreateContactActivity
 import com.alorma.contactnotes.ui.notes.NotesActivity
+import io.reactivex.functions.Consumer
 import kotlinx.android.synthetic.main.activity_overview.*
 import javax.inject.Inject
 
-class OverviewActivity : AppCompatActivity() {
+class OverviewActivity : BaseActivity() {
 
     companion object {
         private const val CREATE_CONTACT_REQUEST_CODE: Int = 1234
@@ -53,11 +56,6 @@ class OverviewActivity : AppCompatActivity() {
         subscribe()
     }
 
-    override fun onStart() {
-        super.onStart()
-        viewModel.loadContacts()
-    }
-
     private fun setupAdapter() {
         recyclerOverview.layoutManager = GridLayoutManager(this, 2)
         recyclerOverview.adapter = contactsAdapter
@@ -71,24 +69,28 @@ class OverviewActivity : AppCompatActivity() {
     }
 
     private fun openContactSelector() {
-        startActivityForResult(CreateContactActivity.createIntent(this), CREATE_CONTACT_REQUEST_CODE)
+        startActivity(CreateContactActivity.createIntent(this))
     }
 
     private fun subscribe() {
-/*
-        viewModel.contactsLiveData.observe(this, Observer {
-            it?.let {
-                contactsAdapter.updateItems(it)
+        viewModel.subscribeLoadContacts(lifecycleRelay.lifecycle, Consumer {
+            onContactLoad(it)
+        })
+    }
 
-                if (contactsAdapter.itemCount == 0) {
-                    onContactsEmpty()
-                } else {
-                    recyclerOverview.visibility = VISIBLE
-                    contactsText.visibility = GONE
-                }
+    private fun onContactLoad(either: Either<Throwable, List<Contact>>) {
+        either.fold({
+            LogExceptionProvider().onError(it)
+            Toast.makeText(this@OverviewActivity, "Error loading contacts", Toast.LENGTH_SHORT).show()
+        }, {
+            if (it.isEmpty()) {
+                onContactsEmpty()
+            } else {
+                recyclerOverview.visibility = VISIBLE
+                contactsText.visibility = GONE
+                contactsAdapter.updateItems(it)
             }
         })
-        */
     }
 
     private fun onContactsEmpty() {
@@ -96,16 +98,5 @@ class OverviewActivity : AppCompatActivity() {
         contactsText.visibility = VISIBLE
 
         contactsText.text = "Contacts saved: empty"
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == CREATE_CONTACT_REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK) {
-                viewModel.loadContacts()
-            }
-        }
     }
 }

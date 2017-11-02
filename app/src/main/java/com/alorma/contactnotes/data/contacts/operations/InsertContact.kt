@@ -12,8 +12,7 @@ class InsertContact(private val contactsProvider: ContactsListProvider?) {
     fun insert(createUserForm: Either<Throwable, CreateUserForm>): Single<Either<Throwable, Contact>> {
         return Single.fromCallable {
             createUserForm.flatMap {
-                val contact = Contact(UUID.randomUUID().toString(),
-                        androidId = it.androidId ?: "",
+                val contact = Contact(androidId = it.androidId ?: "",
                         name = it.userName,
                         userPhone = it.userPhone,
                         userEmail = it.userEmail)

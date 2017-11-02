@@ -6,6 +6,7 @@ import android.provider.ContactsContract
 import com.alorma.contactnotes.arch.Either
 import com.alorma.contactnotes.arch.Left
 import com.alorma.contactnotes.arch.Right
+import com.alorma.contactnotes.data.contacts.store.ContactEntity
 import com.alorma.contactnotes.domain.contacts.Contact
 import io.reactivex.Single
 
@@ -28,20 +29,17 @@ class AndroidGetContact(private val contentResolver: ContentResolver) {
         if (cursor.moveToFirst()) {
             val idIndex = cursor.getColumnIndex(ContactsContract.Contacts._ID)
             val nameIndex = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)
-            val lookupIndex = cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY)
 
             val id = cursor.getString(idIndex)
             val name = cursor.getString(nameIndex)
-            val lookup = cursor.getString(lookupIndex)
 
             cursor.close()
-
+            
             val email: String? = loadEmail(id)
             val phone: String? = loadPhone(id)
 
             return Contact(androidId = id,
                     name = name,
-                    lookup = lookup,
                     userEmail = email,
                     userPhone = phone)
         } else {
