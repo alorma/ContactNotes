@@ -7,7 +7,7 @@ class ValidUserEmail(private vararg val rules: ValidationRule<String, String>) :
     override fun validate(t: CreateUserForm?): Boolean {
         return t?.let {
             it.userEmail?.let { check(it) } ?: true
-        } ?: false
+        } ?: true
     }
 
     private fun check(name: String): Boolean {
