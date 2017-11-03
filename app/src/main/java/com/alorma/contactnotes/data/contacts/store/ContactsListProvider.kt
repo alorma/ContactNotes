@@ -20,30 +20,29 @@ class ContactsListProvider private constructor(private val db: ContactDao) {
     fun add(contact: Contact): Either<Throwable, Contact> {
         return try {
             when {
-                contact.androidId == null -> insert(contact)
+                contact.androidId == null -> Right(insert(contact))
                 else -> {
                     val contactEntity = getByAndroidId(contact.androidId)
-                    if (contactEntity == null) {
-                        insert(contact)
-                    } else {
-                        update(contactEntity)
+                    when (contactEntity) {
+                        null -> Right(insert(contact))
+                        else -> Right(update(contactEntity))
                     }
                 }
             }
-            Right(contact)
         } catch (e: Exception) {
             Left(e)
         }
     }
 
-    private fun insert(contact: Contact) {
-        db.insertAll(contact.map {
-            mapContact(contact)
-        })
+    private fun insert(contact: Contact): Contact {
+        val contactEntity = mapContact(contact)
+        db.insertAll(contactEntity)
+        return contact.copy(id = contactEntity.id)
     }
 
-    private fun update(contact: ContactEntity) {
-        db.update(contact)
+    private fun update(contactEntity: ContactEntity): Contact {
+        db.update(contactEntity)
+        return mapEntity(contactEntity)
     }
 
     fun list(): Either<Throwable, List<Contact>> {

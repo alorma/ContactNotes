@@ -3,7 +3,7 @@ package com.alorma.contactnotes.ui.notes
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import com.alorma.contactnotes.data.notes.AddContactNote
-import com.alorma.contactnotes.data.notes.ContactsNotesProvider
+import com.alorma.contactnotes.data.notes.NotesProvider
 import com.alorma.contactnotes.data.notes.ListContactNotes
 
 class NotesViewModelFactory : ViewModelProvider.Factory {
@@ -15,10 +15,10 @@ class NotesViewModelFactory : ViewModelProvider.Factory {
     }
 
     private fun buildListContactNotes(): ListContactNotes {
-        return ListContactNotes(ContactsNotesProvider.INSTANCE)
+        return ListContactNotes(NotesProvider.INSTANCE)
     }
 
     private fun buildAddContactNotes(): AddContactNote {
-        return AddContactNote(ContactsNotesProvider.INSTANCE)
+        return AddContactNote(NotesProvider.INSTANCE)
     }
 }

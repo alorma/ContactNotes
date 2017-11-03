@@ -4,7 +4,7 @@ import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import com.alorma.contactnotes.data.contacts.operations.ListContacts
 import com.alorma.contactnotes.data.contacts.store.ContactsListProvider
-import com.alorma.contactnotes.data.notes.ContactsNotesProvider
+import com.alorma.contactnotes.data.notes.NotesProvider
 import com.alorma.contactnotes.data.notes.ListContactNotes
 
 class OverViewModelFactory : ViewModelProvider.Factory {
@@ -20,6 +20,6 @@ class OverViewModelFactory : ViewModelProvider.Factory {
     }
 
     private fun provideListNotes(): ListContactNotes {
-        return ListContactNotes(ContactsNotesProvider.INSTANCE)
+        return ListContactNotes(NotesProvider.INSTANCE)
     }
 }
