@@ -3,10 +3,9 @@ package com.alorma.contactnotes.ui.overview
 import android.arch.lifecycle.Lifecycle
 import com.alorma.contactnotes.arch.BaseViewModel
 import com.alorma.contactnotes.arch.Either
-import com.alorma.contactnotes.arch.Right
 import com.alorma.contactnotes.arch.map
 import com.alorma.contactnotes.data.contacts.operations.ListContacts
-import com.alorma.contactnotes.data.notes.ListContactNotes
+import com.alorma.contactnotes.data.notes.operations.ListContactNotes
 import com.alorma.contactnotes.domain.contacts.Contact
 import com.jakewharton.rxrelay2.Relay
 import io.reactivex.android.schedulers.AndroidSchedulers

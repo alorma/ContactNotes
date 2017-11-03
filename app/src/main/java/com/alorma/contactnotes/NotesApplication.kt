@@ -4,7 +4,7 @@ import android.arch.persistence.room.Room
 import android.support.multidex.MultiDexApplication
 import com.alorma.contactnotes.data.AppDatabase
 import com.alorma.contactnotes.data.contacts.store.ContactsListProvider
-import com.alorma.contactnotes.data.notes.NotesProvider
+import com.alorma.contactnotes.data.notes.store.NotesProvider
 import com.google.firebase.FirebaseApp
 
 class NotesApplication : MultiDexApplication() {

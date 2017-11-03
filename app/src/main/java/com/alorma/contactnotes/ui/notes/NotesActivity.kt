@@ -59,7 +59,7 @@ class NotesActivity : BaseActivity() {
 
     override fun onStart() {
         super.onStart()
-        contactRelay.accept(getContactId(intent))
+        contactRelay.accept(contactId)
     }
 
     private fun onNotesLoaded(it: Either<Throwable, List<Note>>) {
@@ -100,7 +100,7 @@ class NotesActivity : BaseActivity() {
     }
 
     private fun createNote() {
-        notesViewModel.onNoteAdded()
+        startActivity(NoteActivity.createIntent(this, contactId))
     }
 
     private fun openNote(noteId: String) {

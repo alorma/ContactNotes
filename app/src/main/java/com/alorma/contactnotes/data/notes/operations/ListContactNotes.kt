@@ -1,8 +1,9 @@
-package com.alorma.contactnotes.data.notes
+package com.alorma.contactnotes.data.notes.operations
 
 import com.alorma.contactnotes.arch.Either
 import com.alorma.contactnotes.arch.Left
 import com.alorma.contactnotes.arch.Right
+import com.alorma.contactnotes.data.notes.store.NotesProvider
 import com.alorma.contactnotes.domain.notes.Note
 import io.reactivex.Single
 

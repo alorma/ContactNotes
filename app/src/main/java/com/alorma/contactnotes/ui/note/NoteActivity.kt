@@ -1,17 +1,28 @@
 package com.alorma.contactnotes.ui.note
 
-import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import android.text.TextWatcher
+import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
 import com.alorma.contactnotes.R
+import com.alorma.contactnotes.arch.Either
+import com.alorma.contactnotes.arch.ExceptionProvider
+import com.alorma.contactnotes.arch.fold
+import com.alorma.contactnotes.data.notes.operations.NoNoteException
+import com.alorma.contactnotes.domain.notes.Note
+import com.alorma.contactnotes.ui.BaseActivity
+import com.jakewharton.rxbinding2.widget.RxTextView
+import com.jakewharton.rxrelay2.BehaviorRelay
+import com.jakewharton.rxrelay2.PublishRelay
+import com.jakewharton.rxrelay2.Relay
+import io.reactivex.functions.Consumer
 import kotlinx.android.synthetic.main.activity_note_editor.*
 
-class NoteActivity : AppCompatActivity() {
+class NoteActivity : BaseActivity() {
 
     companion object {
         private val NOTE_ID = "EXTRA_NOTE_ID"
@@ -27,6 +38,9 @@ class NoteActivity : AppCompatActivity() {
 
         fun getNoteId(intent: Intent): String? = intent.getStringExtra(NOTE_ID)
         fun getContactId(intent: Intent): String = intent.getStringExtra(CONTACT_ID)
+
+        private val contactRelay: Relay<NoteMetaData> = PublishRelay.create()
+        private val noteRelay: Relay<Note> = BehaviorRelay.create()
     }
 
     private val contactId: String by lazy { getContactId(intent) }
@@ -42,27 +56,55 @@ class NoteActivity : AppCompatActivity() {
 
         noteViewModel = ViewModelProviders.of(this, NoteViewModelFactory()).get(NoteViewModel::class.java)
 
-        subscribe()
-
-        if (noteId == null) {
-            noteContent.hint = "Write something"
-            noteViewModel.newNote()
-        } else {
-            noteId?.let {
-                noteViewModel.loadNote(it)
-            }
-        }
+        subscribeCreate()
+        subscribeLoad()
     }
 
-    private fun subscribe() {
-        noteViewModel.getData().observe(this, Observer {
-            it?.let {
-                noteContent.setText(it.text)
+    override fun onStart() {
+        super.onStart()
+        contactRelay.accept(NoteMetaData(contactId, noteId))
+    }
+
+    private fun subscribeLoad() {
+        noteViewModel.subscribeLoadNote(lifecycleRelay.lifecycle, contactRelay, Consumer {
+            onNoteLoaded(it)
+        })
+    }
+
+    private fun subscribeCreate() {
+        val textRelay = RxTextView.afterTextChangeEvents(noteContent).map { it.editable().toString() }
+        noteViewModel.subscribeSaveNote(lifecycleRelay.lifecycle,
+                contactRelay,
+                textRelay,
+                noteRelay,
+                Consumer {
+                    it.fold({
+                        ExceptionProvider().onError(it)
+                    }, {
+                        noteRelay.accept(it)
+                    })
+                })
+    }
+
+
+    private fun onNoteLoaded(it: Either<Throwable, Note>) {
+        it.fold({
+            onNoteLoadError(it)
+            noteRelay.accept(Note(contactId = contactId))
+        }, {
+            noteRelay.accept(it)
+            noteContent.setText(it.text)
+        })
+    }
+
+    private fun onNoteLoadError(it: Throwable) {
+        when (it) {
+            is NoNoteException -> noteContent.hint = "Write something"
+            else -> {
+                Toast.makeText(this@NoteActivity, "Error", Toast.LENGTH_SHORT).show()
+                ExceptionProvider().onError(it)
             }
-        })
-        noteViewModel.getError().observe(this, Observer {
-            Toast.makeText(this@NoteActivity, "Error", Toast.LENGTH_SHORT).show()
-        })
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -71,10 +113,4 @@ class NoteActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
-
-    override fun onStop() {
-        noteViewModel.saveNote(contactId, noteContent.text.toString())
-        super.onStop()
-    }
-
 }

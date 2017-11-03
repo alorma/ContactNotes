@@ -63,11 +63,19 @@ class ContactsOverviewAdapter(private val callback: (Contact) -> Unit) : Recycle
             contact.notes?.let {
                 if (it.isNotEmpty()) {
                     val text = it[0].text
-                    val maxLength = Math.min(text.length, 100) - 1
-                    val substringRange = 0..maxLength
-                    contactNote.text = text[substringRange]
-                    contactNote.visibility = View.VISIBLE
-                    noNotesText.visibility = View.GONE
+                    if (text != null) text.let {
+                        if (text.isNotEmpty()) {
+                            val maxLength = Math.min(text.length, 100) - 1
+                            val substringRange = 0..maxLength
+                            contactNote.text = text[substringRange]
+                            contactNote.visibility = View.VISIBLE
+                            noNotesText.visibility = View.GONE
+                        }
+                    } else {
+                        contactNote.text = ""
+                        contactNote.visibility = View.GONE
+                        noNotesText.visibility = View.VISIBLE
+                    }
                 } else {
                     contactNote.visibility = View.GONE
                     noNotesText.visibility = View.VISIBLE

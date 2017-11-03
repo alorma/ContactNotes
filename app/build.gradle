@@ -50,6 +50,7 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxJava"
     implementation "io.reactivex.rxjava2:rxandroid:$rootProject.rxAndroid"
     implementation "com.jakewharton.rxrelay2:rxrelay:2.0.0"
+    implementation 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
 
     // Firebase
     implementation "com.google.firebase:firebase-firestore:$rootProject.firebaseVersion"

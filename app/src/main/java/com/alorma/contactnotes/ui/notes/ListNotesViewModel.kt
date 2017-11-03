@@ -3,8 +3,8 @@ package com.alorma.contactnotes.ui.notes
 import android.arch.lifecycle.Lifecycle
 import com.alorma.contactnotes.arch.BaseViewModel
 import com.alorma.contactnotes.arch.Either
-import com.alorma.contactnotes.data.notes.AddContactNote
-import com.alorma.contactnotes.data.notes.ListContactNotes
+import com.alorma.contactnotes.data.notes.operations.AddContactNote
+import com.alorma.contactnotes.data.notes.operations.ListContactNotes
 import com.alorma.contactnotes.domain.notes.Note
 import com.jakewharton.rxrelay2.Relay
 import io.reactivex.android.schedulers.AndroidSchedulers

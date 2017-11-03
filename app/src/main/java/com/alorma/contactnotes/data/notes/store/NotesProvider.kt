@@ -1,10 +1,9 @@
-package com.alorma.contactnotes.data.notes
+package com.alorma.contactnotes.data.notes.store
 
 import com.alorma.contactnotes.arch.Either
 import com.alorma.contactnotes.arch.Left
 import com.alorma.contactnotes.arch.Right
-import com.alorma.contactnotes.data.notes.store.NoteEntity
-import com.alorma.contactnotes.data.notes.store.NotesDao
+import com.alorma.contactnotes.data.notes.operations.NoNoteException
 import com.alorma.contactnotes.domain.notes.Note
 import java.util.*
 
@@ -18,25 +17,25 @@ class NotesProvider private constructor(private val db: NotesDao) {
         }
     }
 
-    fun add(userId: String, note: Note): Either<Exception, Note> {
+    fun add(note: Note): Either<Exception, Note> {
         return try {
             when {
-                note.id == null -> Right(insert(note, userId))
-                else -> Right(update(note, userId))
+                note.id == null -> Right(insert(note))
+                else -> Right(update(note))
             }
         } catch (e: Exception) {
             Left(e)
         }
     }
 
-    private fun insert(note: Note, userId: String): Note {
-        val noteEntity = mapEntity(note, userId)
+    private fun insert(note: Note): Note {
+        val noteEntity = mapEntity(note)
         db.insertAll(noteEntity)
         return mapNote(noteEntity)
     }
 
-    private fun update(note: Note, userId: String): Note {
-        val noteEntity = mapEntity(note, userId)
+    private fun update(note: Note): Note {
+        val noteEntity = mapEntity(note)
         db.update(noteEntity)
         return mapNote(noteEntity)
     }
@@ -47,12 +46,22 @@ class NotesProvider private constructor(private val db: NotesDao) {
         }
     }
 
+    fun getNoteById(noteId: String): Either<Throwable, Note> {
+        val noteEntity = db.findById(noteId)
+        return if (noteEntity == null) {
+            Left(NoNoteException())
+        } else {
+            Right(mapNote(noteEntity))
+        }
+    }
+
     private fun mapNote(it: NoteEntity) = Note(it.id,
             it.content,
+            it.contactId,
             Date(it.date))
 
-    private fun mapEntity(it: Note, userId: String) = NoteEntity(it.id ?: UUID.randomUUID().toString(),
-            userId,
+    private fun mapEntity(it: Note) = NoteEntity(it.id ?: UUID.randomUUID().toString(),
+            it.contactId,
             it.text,
             (it.date ?: Date()).time)
 }

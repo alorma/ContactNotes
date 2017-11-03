@@ -7,8 +7,11 @@ import android.arch.persistence.room.Query
 
 @Dao
 interface NotesDao {
-    @Query("SELECT * FROM notes WHERE contactId LIKE :userId LIMIT 1")
+    @Query("SELECT * FROM notes WHERE contactId LIKE :userId")
     fun findByUserId(userId: String): List<NoteEntity>
+
+    @Query("SELECT * FROM notes WHERE id LIKE :id LIMIT 1")
+    fun findById(id: String): NoteEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg noteEntity: NoteEntity)
