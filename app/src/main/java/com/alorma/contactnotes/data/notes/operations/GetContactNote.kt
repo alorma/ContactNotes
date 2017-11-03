@@ -8,10 +8,10 @@ import io.reactivex.Single
 
 class GetContactNote(private val notesProvider: NotesProvider?) {
 
-    fun getSingle(noteMetaData: NoteMetaData): Single<Either<Throwable, Note>> {
+    fun getSingle(noteId: String): Single<Either<Throwable, Note>> {
         return Single.fromCallable {
             when {
-                notesProvider != null -> get(noteMetaData.noteId)
+                notesProvider != null -> get(noteId)
                 else -> Left(NullPointerException("NotesProvider is null"))
             }
         }

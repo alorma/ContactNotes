@@ -9,7 +9,7 @@ import com.alorma.contactnotes.data.notes.operations.ListContactNotes
 class NotesViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when (modelClass) {
-            ListNotesViewModel::class.java -> ListNotesViewModel(buildListContactNotes(), buildAddContactNotes()) as T
+            ListNotesViewModel::class.java -> ListNotesViewModel(buildListContactNotes()) as T
             else -> throw IllegalArgumentException()
         }
     }

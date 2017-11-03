@@ -1,47 +1,45 @@
 package com.alorma.contactnotes.ui.note
 
 import android.arch.lifecycle.Lifecycle
-import android.util.Log
-import com.alorma.contactnotes.arch.*
+import com.alorma.contactnotes.arch.BaseViewModel
+import com.alorma.contactnotes.arch.Either
+import com.alorma.contactnotes.arch.Left
 import com.alorma.contactnotes.data.notes.operations.AddContactNote
 import com.alorma.contactnotes.data.notes.operations.GetContactNote
 import com.alorma.contactnotes.data.notes.operations.NoNoteException
+import com.alorma.contactnotes.data.notes.operations.UpdateContactNote
 import com.alorma.contactnotes.domain.notes.Note
-import com.alorma.contactnotes.domain.validator.Validator
 import com.jakewharton.rxrelay2.Relay
-import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 
 class NoteViewModel(private val getNote: GetContactNote,
-                    private val addNote: AddContactNote) : BaseViewModel() {
+                    private val addNote: AddContactNote,
+                    private val updateNote: UpdateContactNote) : BaseViewModel() {
 
-
-    fun subscribeLoadNote(lifecycleRelay: Relay<Lifecycle.Event>, contactRelay: Relay<NoteMetaData>, consumer: Consumer<Either<Throwable, Note>>) {
-        filterState(lifecycleRelay, Lifecycle.Event.ON_CREATE)
-                .switchMap { contactRelay }
-                .observeOn(Schedulers.io())
-                .flatMapSingle { getNote.getSingle(it) }
-                .takeUntil(filterState(lifecycleRelay, Lifecycle.Event.ON_DESTROY))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(consumer)
+    fun subscribeLoadNote(lifecycleRelay: Relay<Lifecycle.Event>, noteId: String?, consumer: Consumer<Either<Throwable, Note>>) {
+        if (noteId != null) {
+            filterState(lifecycleRelay, Lifecycle.Event.ON_CREATE)
+                    .observeOn(Schedulers.io())
+                    .flatMapSingle { getNote.getSingle(noteId) }
+                    .takeUntil(filterState(lifecycleRelay, Lifecycle.Event.ON_DESTROY))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(consumer)
+        } else {
+            consumer.accept(Left(NoNoteException()))
+        }
     }
 
-    fun subscribeSaveNote(lifecycleRelay: Relay<Lifecycle.Event>,
-                          contactRelay: Relay<NoteMetaData>,
-                          textRelay: Observable<String>,
-                          noteRelay: Relay<Note>,
+    fun subscribeSaveNote(contactId: String,
+                          noteId: String?,
+                          text: String,
                           consumer: Consumer<Either<Throwable, Note>>) {
-        filterState(lifecycleRelay, Lifecycle.Event.ON_CREATE)
-                .switchMap { contactRelay }
-                .flatMap { data -> noteRelay.map { it.copy(contactId = data.contactId) } }
-                .flatMap { note -> textRelay.map { note.copy(text = it) } }
-                .observeOn(Schedulers.io())
-                .flatMap { addNote.add(it).toObservable() }
-                .takeUntil(filterState(lifecycleRelay, Lifecycle.Event.ON_DESTROY))
+        if (noteId == null) {
+            addNote.add(text, contactId)
+        } else {
+            updateNote.update(text, contactId)
+        }.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(consumer)
     }

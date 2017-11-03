@@ -5,7 +5,7 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
 
 @Entity(tableName = "notes")
-class NoteEntity(@PrimaryKey val id: String,
-                 @ColumnInfo(name = "contactId") val contactId: String,
-                 @ColumnInfo(name = "content") val content: String? = null,
-                 @ColumnInfo(name = "date") val date: Long)
+class NoteEntity(@PrimaryKey(autoGenerate = true) var id: Long = 0,
+                 @ColumnInfo(name = "contactId") var contactId: String,
+                 @ColumnInfo(name = "content") var content: String = "",
+                 @ColumnInfo(name = "date") var date: Long = System.currentTimeMillis())

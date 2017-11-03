@@ -1,9 +1,6 @@
 package com.alorma.contactnotes.data.notes.store
 
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Insert
-import android.arch.persistence.room.OnConflictStrategy
-import android.arch.persistence.room.Query
+import android.arch.persistence.room.*
 
 @Dao
 interface NotesDao {
@@ -14,8 +11,8 @@ interface NotesDao {
     fun findById(id: String): NoteEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg noteEntity: NoteEntity)
+    fun insertAll(vararg noteEntity: NoteEntity): List<Long>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun update(vararg noteEntity: NoteEntity)
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    fun update(vararg noteEntity: NoteEntity): Int
 }

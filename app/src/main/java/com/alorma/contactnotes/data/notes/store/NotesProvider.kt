@@ -17,33 +17,10 @@ class NotesProvider private constructor(private val db: NotesDao) {
         }
     }
 
-    fun add(note: Note): Either<Exception, Note> {
-        return try {
-            when {
-                note.id == null -> Right(insert(note))
-                else -> Right(update(note))
-            }
-        } catch (e: Exception) {
-            Left(e)
-        }
-    }
-
-    private fun insert(note: Note): Note {
-        val noteEntity = mapEntity(note)
-        db.insertAll(noteEntity)
-        return mapNote(noteEntity)
-    }
-
-    private fun update(note: Note): Note {
-        val noteEntity = mapEntity(note)
-        db.update(noteEntity)
-        return mapNote(noteEntity)
-    }
-
     fun list(userId: String): List<Note> {
         return db.findByUserId(userId).map {
             mapNote(it)
-        }
+        }.sortedByDescending { it.date }
     }
 
     fun getNoteById(noteId: String): Either<Throwable, Note> {
@@ -55,13 +32,35 @@ class NotesProvider private constructor(private val db: NotesDao) {
         }
     }
 
-    private fun mapNote(it: NoteEntity) = Note(it.id,
-            it.content,
-            it.contactId,
-            Date(it.date))
+    fun insertNote(note: String, contactId: String): Either<Exception, Note> {
+        return try {
+            Right(insert(note, contactId))
+        } catch (e: Exception) {
+            Left(e)
+        }
+    }
 
-    private fun mapEntity(it: Note) = NoteEntity(it.id ?: UUID.randomUUID().toString(),
-            it.contactId,
-            it.text,
-            (it.date ?: Date()).time)
+    private fun insert(text: String, contactId: String): Note {
+        val noteEntity = NoteEntity(contactId = contactId, content = text)
+        db.insertAll(noteEntity)
+        return mapNote(noteEntity)
+    }
+
+    fun updateNote(text: String, noteId: String, contactId: String): Either<Exception, Note> {
+        return try {
+            Right(update(text, noteId, contactId))
+        } catch (e: Exception) {
+            Left(e)
+        }
+    }
+
+    private fun update(text: String, noteId: String, contactId: String): Note {
+        val noteEntity = NoteEntity(noteId.toLong(), contactId, text, System.currentTimeMillis())
+        db.update(noteEntity)
+        return mapNote(noteEntity)
+    }
+
+    private fun mapNote(it: NoteEntity) = Note(it.id.toString(),
+            it.content,
+            Date(it.date))
 }

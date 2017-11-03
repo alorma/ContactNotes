@@ -40,7 +40,6 @@ class NoteActivity : BaseActivity() {
         fun getContactId(intent: Intent): String = intent.getStringExtra(CONTACT_ID)
 
         private val contactRelay: Relay<NoteMetaData> = PublishRelay.create()
-        private val noteRelay: Relay<Note> = BehaviorRelay.create()
     }
 
     private val contactId: String by lazy { getContactId(intent) }
@@ -56,7 +55,6 @@ class NoteActivity : BaseActivity() {
 
         noteViewModel = ViewModelProviders.of(this, NoteViewModelFactory()).get(NoteViewModel::class.java)
 
-        subscribeCreate()
         subscribeLoad()
     }
 
@@ -66,33 +64,28 @@ class NoteActivity : BaseActivity() {
     }
 
     private fun subscribeLoad() {
-        noteViewModel.subscribeLoadNote(lifecycleRelay.lifecycle, contactRelay, Consumer {
+        noteViewModel.subscribeLoadNote(lifecycleRelay.lifecycle, noteId, Consumer {
             onNoteLoaded(it)
         })
     }
 
-    private fun subscribeCreate() {
-        val textRelay = RxTextView.afterTextChangeEvents(noteContent).map { it.editable().toString() }
-        noteViewModel.subscribeSaveNote(lifecycleRelay.lifecycle,
-                contactRelay,
-                textRelay,
-                noteRelay,
+    private fun createNote(text: String) {
+        noteViewModel.subscribeSaveNote(contactId, noteId,
+                text,
                 Consumer {
                     it.fold({
+                        Toast.makeText(this@NoteActivity, "Note not saved", Toast.LENGTH_SHORT).show()
                         ExceptionProvider().onError(it)
                     }, {
-                        noteRelay.accept(it)
+                        finish()
                     })
                 })
     }
 
-
     private fun onNoteLoaded(it: Either<Throwable, Note>) {
         it.fold({
             onNoteLoadError(it)
-            noteRelay.accept(Note(contactId = contactId))
         }, {
-            noteRelay.accept(it)
             noteContent.setText(it.text)
         })
     }
@@ -109,8 +102,12 @@ class NoteActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            android.R.id.home -> finish()
+            android.R.id.home -> createNote(noteContent.text.toString())
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onBackPressed() {
+        createNote(noteContent.text.toString())
     }
 }

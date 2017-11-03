@@ -6,11 +6,11 @@ import com.alorma.contactnotes.data.notes.store.NotesProvider
 import com.alorma.contactnotes.domain.notes.Note
 import io.reactivex.Single
 
-class AddContactNote(private val notesProvider: NotesProvider?) {
-    fun add(text: String,contactId: String): Single<Either<Throwable, Note>> {
+class UpdateContactNote(private val notesProvider: NotesProvider?) {
+    fun update(text: String, noteId: String): Single<Either<Throwable, Note>> {
         return Single.fromCallable {
             when {
-                notesProvider != null -> notesProvider.insertNote(text, contactId)
+                notesProvider != null -> notesProvider.updateNote(text, noteId)
                 else -> Left(NullPointerException("NotesProvider is null"))
             }
         }

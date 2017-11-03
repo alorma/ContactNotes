@@ -37,7 +37,7 @@ class ContactsListProvider private constructor(private val db: ContactDao) {
     private fun insert(contact: Contact): Contact {
         val contactEntity = mapContact(contact)
         db.insertAll(contactEntity)
-        return contact.copy(id = contactEntity.id)
+        return contact.copy(id = contactEntity.id.toString())
     }
 
     private fun update(contactEntity: ContactEntity): Contact {
@@ -54,12 +54,12 @@ class ContactsListProvider private constructor(private val db: ContactDao) {
     private fun getByAndroidId(userId: String): ContactEntity? = db.findByAndroidId(userId)
 
     private fun mapContact(contact: Contact) =
-            ContactEntity(id = contact.id ?: UUID.randomUUID().toString(),
+            ContactEntity(id = contact.id?.toLong() ?: 0,
                     androidId = contact.androidId,
                     name = contact.name,
                     userEmail = contact.userEmail,
                     userPhone = contact.userPhone)
 
     private fun mapEntity(it: ContactEntity) =
-            Contact(id = it.id, androidId = it.androidId, name = it.name, userEmail = it.userEmail, userPhone = it.userPhone)
+            Contact(it.id.toString(), it.androidId, it.name, it.userEmail, it.userPhone)
 }
