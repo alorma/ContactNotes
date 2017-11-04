@@ -38,7 +38,7 @@ class NoteViewModel(private val getNote: GetContactNote,
         if (noteId == null) {
             addNote.add(text, contactId)
         } else {
-            updateNote.update(text, contactId)
+            updateNote.update(text, noteId, contactId)
         }.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(consumer)
