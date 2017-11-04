@@ -13,6 +13,7 @@ import com.alorma.contactnotes.arch.Either
 import com.alorma.contactnotes.arch.ExceptionProvider
 import com.alorma.contactnotes.arch.fold
 import com.alorma.contactnotes.data.notes.operations.NoNoteException
+import com.alorma.contactnotes.data.notes.operations.NoSaveException
 import com.alorma.contactnotes.domain.notes.Note
 import com.alorma.contactnotes.ui.BaseActivity
 import com.jakewharton.rxbinding2.widget.RxTextView
@@ -74,8 +75,16 @@ class NoteActivity : BaseActivity() {
                 text,
                 Consumer {
                     it.fold({
-                        Toast.makeText(this@NoteActivity, "Note not saved", Toast.LENGTH_SHORT).show()
-                        ExceptionProvider().onError(it)
+                        when (it) {
+                            is NoSaveException -> {
+                                finish()
+                            }
+                            else -> {
+                                Toast.makeText(this@NoteActivity, "Note not saved", Toast.LENGTH_SHORT).show()
+                                ExceptionProvider().onError(it)
+                                finish()
+                            }
+                        }
                     }, {
                         finish()
                     })

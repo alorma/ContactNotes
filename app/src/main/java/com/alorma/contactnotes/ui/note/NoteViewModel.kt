@@ -4,12 +4,10 @@ import android.arch.lifecycle.Lifecycle
 import com.alorma.contactnotes.arch.BaseViewModel
 import com.alorma.contactnotes.arch.Either
 import com.alorma.contactnotes.arch.Left
-import com.alorma.contactnotes.data.notes.operations.AddContactNote
-import com.alorma.contactnotes.data.notes.operations.GetContactNote
-import com.alorma.contactnotes.data.notes.operations.NoNoteException
-import com.alorma.contactnotes.data.notes.operations.UpdateContactNote
+import com.alorma.contactnotes.data.notes.operations.*
 import com.alorma.contactnotes.domain.notes.Note
 import com.jakewharton.rxrelay2.Relay
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
@@ -35,12 +33,16 @@ class NoteViewModel(private val getNote: GetContactNote,
                           noteId: String?,
                           text: String,
                           consumer: Consumer<Either<Throwable, Note>>) {
-        if (noteId == null) {
-            addNote.add(text, contactId)
+        if (noteId == null && text.isNotEmpty()) {
+            addNote.add(text, contactId).subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(consumer)
+        } else if (noteId != null) {
+            updateNote.update(text, noteId, contactId).subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(consumer)
         } else {
-            updateNote.update(text, noteId, contactId)
-        }.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(consumer)
+            consumer.accept(Left(NoSaveException()))
+        }
     }
 }
