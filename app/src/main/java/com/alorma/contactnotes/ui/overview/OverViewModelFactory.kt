@@ -8,7 +8,7 @@ import com.alorma.contactnotes.data.notes.store.NotesProvider
 import com.alorma.contactnotes.data.notes.operations.ListContactNotes
 
 class OverViewModelFactory : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>?): T {
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return when (modelClass) {
             OverviewViewModel::class.java -> OverviewViewModel(provideListContacts(), provideListNotes()) as T
             else -> throw IllegalArgumentException()
