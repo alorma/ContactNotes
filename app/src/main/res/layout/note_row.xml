@@ -8,68 +8,27 @@
              android:orientation="horizontal">
 
     <android.support.v7.widget.CardView
+        android:id="@+id/noteCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         app:cardCornerRadius="4dp"
         app:cardElevation="4dp">
 
-        <FrameLayout
+        <TextView
+            android:id="@+id/note"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="200dp"
+            android:layout_gravity="end|center_vertical"
+            android:padding="8dp"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
+            app:autoSizeMaxTextSize="100sp"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeStepGranularity="2sp"
+            app:autoSizeTextType="uniform"
+            tools:text="6dvbkeb fje r gje r goerhgoerh gjehgoue guehguehgiuh  3giuh  ouhe4oughe4ouhe4"
+            />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/note"
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:layout_gravity="end|center_vertical"
-                    android:padding="8dp"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
-                    app:autoSizeMaxTextSize="100sp"
-                    app:autoSizeMinTextSize="12sp"
-                    app:autoSizeStepGranularity="2sp"
-                    app:autoSizeTextType="uniform"
-                    tools:text="6dvbkeb fje r gje r goerhgoerh gjehgoue guehguehgiuh  3giuh  ouhe4oughe4ouhe4"
-                    />
-
-            </LinearLayout>
-
-            <FrameLayout
-                android:id="@+id/contextualActions"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#e2383838"
-                android:visibility="gone"
-                tools:visibility="visible">
-
-                <LinearLayout
-                    android:id="@+id/deleteAction"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:background="?selectableItemBackground"
-                    android:drawablePadding="16dp"
-                    android:gravity="center">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/ic_delete"
-                        android:drawableTint="#ffffff"
-                        android:padding="8dp"
-                        android:text="DELETE"
-                        android:textColor="#ffffff"
-                        android:textSize="24sp"
-                        android:textStyle="bold"/>
-                </LinearLayout>
-
-            </FrameLayout>
-        </FrameLayout>
     </android.support.v7.widget.CardView>
 
 </FrameLayout>

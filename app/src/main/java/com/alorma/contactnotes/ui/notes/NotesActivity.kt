@@ -4,7 +4,6 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.view.Menu
 import android.view.MenuItem
@@ -35,6 +34,7 @@ class NotesActivity : BaseActivity() {
         fun getContactId(intent: Intent): String = intent.getStringExtra(EXTRA_CONTACT_ID)
 
         private val contactRelay: Relay<String> = PublishRelay.create()
+        private val selectedNotesRelay: Relay<Note> = PublishRelay.create()
 
     }
 
@@ -54,6 +54,10 @@ class NotesActivity : BaseActivity() {
 
         notesViewModel.subscribeLoadNotes(lifecycleRelay.lifecycle, contactRelay, Consumer {
             onNotesLoaded(it)
+        })
+
+        notesViewModel.subscribeNotesSelection(lifecycleRelay.lifecycle, selectedNotesRelay, Consumer {
+            onItemsSelected(it)
         })
     }
 
@@ -75,12 +79,24 @@ class NotesActivity : BaseActivity() {
         ExceptionProvider().onError(throwable)
     }
 
+    private fun onItemsSelected(it: Either<Throwable, Set<String>>) {
+        it.fold({}, {
+            adapter.setSelectedItems(it)
+        })
+    }
+
     private fun createAdapter() {
-        adapter = NotesAdapter {
+        val callback: (Note) -> Unit = {
             it.id?.let {
                 openNote(it)
             }
         }
+        val callbackLong: (Note) -> Boolean = {
+            selectedNotesRelay.accept(it)
+            true
+        }
+        adapter = NotesAdapter(callback, callbackLong)
+
         val manager = GridLayoutManager(this, 2)
         recyclerNotes.layoutManager = manager
         recyclerNotes.adapter = adapter
