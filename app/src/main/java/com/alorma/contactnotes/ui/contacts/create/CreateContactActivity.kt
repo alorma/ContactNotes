@@ -25,9 +25,10 @@ import com.crashlytics.android.answers.Answers
 import com.crashlytics.android.answers.CustomEvent
 import com.jakewharton.rxrelay2.BehaviorRelay
 import com.karumi.dexter.Dexter
-import com.karumi.dexter.listener.PermissionDeniedResponse
-import com.karumi.dexter.listener.PermissionGrantedResponse
-import com.karumi.dexter.listener.single.BasePermissionListener
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import io.reactivex.functions.Consumer
 import kotlinx.android.synthetic.main.create_contact_activity.*
 
@@ -85,17 +86,20 @@ class CreateContactActivity : BaseActivity() {
 
     private fun checkPermissions(function: () -> Unit) {
         Dexter.withActivity(this)
-                .withPermission(Manifest.permission.READ_CONTACTS)
-                .withListener(object : BasePermissionListener() {
-                    override fun onPermissionGranted(response: PermissionGrantedResponse) {
-                        Answers.getInstance().logCustom(CustomEvent("Permission").putCustomAttribute("Contacts", "granted"))
-                        function()
+                .withPermissions(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)
+                .withListener(object : MultiplePermissionsListener {
+                    override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+                        if (report.areAllPermissionsGranted()) {
+                            Answers.getInstance().logCustom(CustomEvent("Permission").putCustomAttribute("Contacts", "granted"))
+                            function()
+                        }
                     }
 
-                    override fun onPermissionDenied(response: PermissionDeniedResponse) {
+                    override fun onPermissionRationaleShouldBeShown(permissions: MutableList<PermissionRequest>?, token: PermissionToken?) {
                         Answers.getInstance().logCustom(CustomEvent("Permission").putCustomAttribute("Contacts", "denied"))
                         Toast.makeText(this@CreateContactActivity, "You should accept contacts permission", Toast.LENGTH_SHORT).show()
                     }
+
                 }).check()
     }
 

@@ -12,6 +12,7 @@ import com.alorma.contactnotes.R
 import com.alorma.contactnotes.arch.Either
 import com.alorma.contactnotes.arch.ExceptionProvider
 import com.alorma.contactnotes.arch.fold
+import com.alorma.contactnotes.data.contacts.operations.SyncUsers
 import com.alorma.contactnotes.data.notes.operations.NoNoteException
 import com.alorma.contactnotes.data.notes.operations.NoSaveException
 import com.alorma.contactnotes.domain.notes.Note
@@ -86,9 +87,15 @@ class NoteActivity : BaseActivity() {
                             }
                         }
                     }, {
+                        syncContacts()
                         finish()
                     })
                 })
+    }
+
+    private fun syncContacts() {
+        val intent = Intent(this, SyncUsers::class.java)
+        startService(intent)
     }
 
     private fun onNoteLoaded(it: Either<Throwable, Note>) {

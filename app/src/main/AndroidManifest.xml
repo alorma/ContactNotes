@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.alorma.contactnotes">
 
+    <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
     <uses-permission android:name="android.permission.INTERNET"/>
 
@@ -33,6 +34,7 @@
             android:authorities="${applicationId}"
             android:exported="false"/>
 
+        <service android:name=".data.contacts.operations.SyncUsers" />
     </application>
 
 </manifest>

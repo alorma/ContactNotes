@@ -23,6 +23,10 @@ class NotesProvider private constructor(private val db: NotesDao) {
         }.sortedByDescending { it.date }
     }
 
+    fun count(userId: String): Int {
+        return list(userId).size
+    }
+
     fun getNoteById(noteId: String): Either<Throwable, Note> {
         val noteEntity = db.findById(noteId)
         return if (noteEntity == null) {

@@ -4,8 +4,6 @@ import com.alorma.contactnotes.arch.Either
 import com.alorma.contactnotes.arch.Left
 import com.alorma.contactnotes.arch.Right
 import com.alorma.contactnotes.domain.contacts.Contact
-import com.alorma.contactnotes.domain.contacts.map
-import java.util.*
 
 class ContactsListProvider private constructor(private val db: ContactDao) {
 
@@ -50,6 +48,8 @@ class ContactsListProvider private constructor(private val db: ContactDao) {
             mapEntity(it)
         })
     }
+
+    fun getById(userId: String): Contact = mapEntity(db.findById(userId))
 
     private fun getByAndroidId(userId: String): ContactEntity? = db.findByAndroidId(userId)
 
