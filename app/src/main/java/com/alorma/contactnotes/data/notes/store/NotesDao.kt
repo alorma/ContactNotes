@@ -15,4 +15,7 @@ interface NotesDao {
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun update(vararg noteEntity: NoteEntity): Int
+
+    @Delete
+    fun delete(vararg items: NoteEntity)
 }

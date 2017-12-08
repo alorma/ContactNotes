@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -42,6 +43,10 @@ class NotesActivity : BaseActivity() {
     private lateinit var adapter: NotesAdapter
     private val contactId by lazy { getContactId(intent) }
 
+    private val consumer = Consumer<Either<Throwable, List<Note>>> {
+        onNotesLoaded(it)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_notes)
@@ -51,14 +56,15 @@ class NotesActivity : BaseActivity() {
         notesViewModel = ViewModelProviders.of(this, NotesViewModelFactory()).get(ListNotesViewModel::class.java)
 
         createAdapter()
-
-        notesViewModel.subscribeLoadNotes(lifecycleRelay.lifecycle, contactRelay, Consumer {
-            onNotesLoaded(it)
-        })
+        notesViewModel.subscribeLoadNotes(lifecycleRelay.lifecycle, contactRelay, consumer)
 
         notesViewModel.subscribeNotesSelection(lifecycleRelay.lifecycle, selectedNotesRelay, Consumer {
             onItemsSelected(it)
         })
+
+        fabDelete.setOnClickListener {
+            notesViewModel.deleteSelectedNotes(consumer)
+        }
     }
 
     override fun onStart() {
@@ -67,6 +73,7 @@ class NotesActivity : BaseActivity() {
     }
 
     private fun onNotesLoaded(it: Either<Throwable, List<Note>>) {
+        fabDelete.hide()
         it.fold({
             onLoadNotesError(it)
         }, {
@@ -81,6 +88,14 @@ class NotesActivity : BaseActivity() {
 
     private fun onItemsSelected(it: Either<Throwable, Set<String>>) {
         it.fold({}, {
+            invalidateOptionsMenu()
+            if (it.isNotEmpty()) {
+                fabDelete.show()
+                fabDelete.isEnabled = true
+            } else {
+                fabDelete.hide()
+                fabDelete.isEnabled = false
+            }
             adapter.setSelectedItems(it)
         })
     }
@@ -97,7 +112,7 @@ class NotesActivity : BaseActivity() {
         }
         adapter = NotesAdapter(callback, callbackLong)
 
-        val manager = GridLayoutManager(this, 2)
+        val manager: RecyclerView.LayoutManager = GridLayoutManager(this, 2)
         recyclerNotes.layoutManager = manager
         recyclerNotes.adapter = adapter
     }

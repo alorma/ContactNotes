@@ -23,6 +23,14 @@ class NotesProvider private constructor(private val db: NotesDao) {
         }.sortedByDescending { it.date }
     }
 
+    fun getNote(noteId: String): Note? {
+        val noteEntity = db.findById(noteId)
+        if (noteEntity != null) {
+            return mapNote(noteEntity)
+        }
+        return null
+    }
+
     fun getNoteById(noteId: String): Either<Throwable, Note> {
         val noteEntity = db.findById(noteId)
         return if (noteEntity == null) {
@@ -63,4 +71,18 @@ class NotesProvider private constructor(private val db: NotesDao) {
     private fun mapNote(it: NoteEntity) = Note(it.id.toString(),
             it.content,
             Date(it.date))
+
+    private fun mapEntity(userId: String, it: Note) = NoteEntity(it.id?.toLong() ?: 0,
+            userId,
+            it.text ?: "",
+            it.date?.time ?: 0L)
+
+    fun delete(userId: String, items: List<Note>): Either<Exception, Boolean> {
+        return try {
+            db.delete(*items.map { mapEntity(userId, it) }.toTypedArray())
+            Right(true)
+        } catch (e: Exception) {
+            Left(e)
+        }
+    }
 }
